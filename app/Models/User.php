@@ -20,9 +20,6 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $keyType = 'string';
     public $incrementing = false;
     static public $estados = ["Activo","Inactivo","Bloqueado"];
-    public $tipo = ["Desarrollador","Admin","Contabilidad","Atencion","Coordinacion","Maestro","Organizador"];
-
-
     /**
      * The attributes that are mass assignable.
      *
@@ -32,24 +29,15 @@ class User extends Authenticatable implements MustVerifyEmail
         'id',
         'name',
         'lastname',
+        'email',
+        'email_verified_at',
+        'password',
         'avatar',
         'telephone',
-        "user_type",
-        'email',
         'estado',
-        'codigo_maestro', // Para ser registrado como primer usuario "el creador del sistema"
-        'password',
-        'codigo_activacion', // asignado automaticamente por el sistema cuando admin crea un usuario
         'creado_por',
         'actualizado_por', 
-        'ultimo_inicio',
-        'fecha_activacion',
-        'fecha_ultima_invite',
-        'codigo_reset', 
-        'envio_fecha_reset_codigo',
-        'codigo_verificacion',
-        'fecha_envio_verificacion',
-        'avatar'
+        'ultimo_inicio'
     ];
 
     /**
@@ -58,20 +46,12 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $hidden = [
-        'codigo_primer_usuario',
         'password',
         'remember_token',
         'created_at',
         'updated_at',
     ];
 
-   
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
