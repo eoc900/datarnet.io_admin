@@ -25,6 +25,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+    @include('sistema_cobros.form_creator.scripts.validaciones_inputs_scripts')
+    @include('sistema_cobros.form_creator.scripts.alertas_inputs',["arreglo"=>["conf_avanzada","slug"]])
+    @include('sistema_cobros.form_creator.scripts.eventos_inputs')
    
     <script>
       $(document).ready(function(){

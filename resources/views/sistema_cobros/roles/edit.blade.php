@@ -1,12 +1,15 @@
-@extends('sistema_cobros.roles.layouts.index')
+@extends('general.layouts.index')
 @section("content")
 
-
+@include('components.sistema_cobros.response')
 <x-form-in-card titulo="Editar rol" route="roles.update" accion="edicion" :obj="$obj">
     <x-lista-mensajes/>
     <div class="row">      
         <div class="form-group">
-                <x-campo-formulario label="Nombre del rol" id="nombre" name="name" type="text" :value="$obj->name" placeholder="Nombre del rol" required="true" parentClass="col-12"/>
+                <div class="col-12">
+                    <label for="" class="form-label"></label>
+                    <input type="text" class="form-control" name="name" value="{{ $obj->name??'' }}" placeholder="Nombre del rol" required="true" parentClass="col-12">            
+                </div>            
         </div> 
         <div class="col-12 mt-5 ps-5">
             @foreach ($permisos as $permiso)

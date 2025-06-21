@@ -2,8 +2,8 @@
 @section("content")
 
     <div class="row">
-        <div class="card">
-              <img src="{{ asset('dashboard_resources/assets/images/auth/Panel_De_Control_Guest.jpg') }}" class="img-fluid card-img-top" alt="">
+        <div class="card pt-3">
+              <img src="{{ asset('dashboard_resources/assets/branding/dashboard-banner.jpg') }}" class="img-fluid card-img-top shadow" alt="">
               <div class="card-body p-4">
                 <h3 class="text-center">Bienvenid@ a tu panel de control</h3>
                 @if (Auth::user()->hasRole("Guest"))

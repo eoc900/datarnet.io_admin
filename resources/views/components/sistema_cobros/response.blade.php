@@ -10,7 +10,7 @@
 @endif
 @if (session("success"))
         <div class="alert alert-success border-0 bg-grd-success alert-dismissible fade show">
-    <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center">
         <div class="font-35 text-white"><span class="material-icons-outlined fs-2">check_circle</span>
         </div>
         <div class="ms-3">

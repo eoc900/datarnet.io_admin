@@ -1,5 +1,6 @@
-@extends('sistema_cobros.inscripciones.layouts.index')
+@extends('general.layouts.index')
 @section("content")
     <x-page-breadcrumb :titulo="$titulo_breadcrumb" :subtitulo="$subtitulo_breadcrumb" />
+    <a href="{{ route('roles.create') }}" class="btn btn-primary float-end">Crear +</a>
     @include($view,["confTabla"=>$confTabla])
 @endsection

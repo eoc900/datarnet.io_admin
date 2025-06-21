@@ -16,6 +16,7 @@ class FormCreator extends Model
         "nombre_documento",
         "creadoPor",
         "activo",
-        "es_publico"
+        "es_publico",
+        "ruta_banner"
     ];
 }

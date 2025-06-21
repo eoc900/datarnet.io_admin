@@ -112,13 +112,7 @@
               class="material-icons-outlined">person_outline</i>Perfil</a>
             <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="/dashboard"><i
               class="material-icons-outlined">dashboard</i>Dashboard</a>
-            
-            @if (!Auth::user()->hasRole('Guest'))
-                <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="javascript:;"><i
-                  class="material-icons-outlined">account_balance</i>Finanzas</a>
-                <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="javascript:;"><i
-                class="material-icons-outlined">cloud_download</i>Reportes</a>
-            @endif
+                      
 
             <hr class="dropdown-divider">
     

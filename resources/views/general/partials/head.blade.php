@@ -2,7 +2,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ $title }}</title>
   <!--favicon-->
-  <link rel="icon" href="{{ asset("dashboard_resources/assets/images/favicon-32x32.png"); }}" type="image/png">
+  <link rel="icon" type="image/png" href="{{ asset('dashboard_resources/assets/branding/favicon/favicon-96x96.png')}}" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="{{ asset('dashboard_resources/assets/branding/favicon/favicon.svg')}}" />
+  <link rel="shortcut icon" href="{{ asset('dashboard_resources/assets/branding/favicon/favicon.ico')}}" />
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('dashboard_resources/assets/branding/favicon/apple-touch-icon.png')}}" />
+  <meta name="apple-mobile-web-app-title" content="Datarnet IO" />
+  <link rel="manifest" href="{{ asset('dashboard_resources/assets/branding/favicon/site.webmanifest')}}" />
+
   <!-- loader-->
 	<link href="{{ asset("dashboard_resources/assets/css/pace.min.css"); }}" rel="stylesheet">
 	<script src="{{ asset("dashboard_resources/assets/js/pace.min.js"); }}"></script>
@@ -14,8 +20,11 @@
   <link rel="stylesheet" type="text/css" href="{{ asset("dashboard_resources/assets/plugins/simplebar/css/simplebar.css"); }}">
   <!--bootstrap css-->
   <link href="{{ asset("dashboard_resources/assets/css/bootstrap.min.css"); }}" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Material+Icons+Outlined" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="{{ asset("dashboard_resources/assets/css/extra-icons.css");}}">
   <!--main css-->

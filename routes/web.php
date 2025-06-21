@@ -73,7 +73,7 @@ use App\Http\Controllers\TestsController;
 use App\Http\Controllers\HTMLTablesController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [RegisterController::class, 'register']);
+//Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/webhooks/mailgun',[MailGunController::class,'storage']);
 
 
@@ -84,7 +84,7 @@ Route::post('/usuarios/registerMain',[UsuariosController::class,'receiveMaster']
 Route::get('/',[LandingPageController::class,'index']);
 Route::resource('/blog', BlogController::class);
 
-Route::get('/dashboard_inicio', [DashboardsController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard_inicio');
+Route::get('/dashboard_inicio', [DashboardsController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 
 // ----> activación de usuarios
@@ -110,6 +110,7 @@ Route::middleware(['auth','verified'])->group(function () {
 
 //-------> Para manejo de usuario
     Route::get('/usuarios/programar_roles',[UsuariosController::class,'vistaModificarRoles']);
+    Route::post('/usuarios/agregar_rol',[UsuariosController::class,'agregarRoleUsuario'])->name('agregar.rol.usuario');
 
     Route::get('/perfil',[UsuariosController::class,'perfil']);
     Route::post('/usuarios/cambio_avatar',[UsuariosController::class,'updateAvatar']);
@@ -126,20 +127,7 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::resource('/documentos',DocumentoController::class);
     Route::resource('/tipos_documentos',TiposDocumentosController::class);
 
-    Route::resource('/escuelas',EscuelasController::class);
     //-------> Para sistema de cobros
-    Route::get('/formulario/{nombre}',[FormsController::class,'index'])->name('formulario');
-    Route::get('/editar/{nombre}/{id}',[FormsController::class,'actualizar'])->name('editar');
-    Route::post('/alta/escuelas',[FormsController::class,'store'])->name('insert.escuela');
-    Route::post('/alta/sistemas_academicos',[FormsController::class,'store'])->name('insert.sistema_academico');
-    Route::post('/alta/alumnos',[FormsController::class,'store'])->name('insert.alumno');
-    Route::post('/alta/conceptos_cobros',[FormsController::class,'store'])->name('insert.conceptos_cobros');
-    Route::post('/alta/costos_conceptos',[FormsController::class,'store'])->name('insert.costos_conceptos');
-    Route::post('/alta/cuentas',[FormsController::class,'store'])->name('insert.cuentas');
-    Route::post('/enlace/cuenta_alumno',[FormsController::class,'store'])->name('insert.enlace_cuenta');
-    Route::post('/alta/cobros',[FormsController::class,'store'])->name('insert.cobros');
-    Route::post('/alta/roles',[FormsController::class,'store'])->name('insert.roles');
-    Route::post('/alta/permisos',[FormsController::class,'store'])->name('insert.permisos');
     Route::post('/alta/rol_permisos',[FormsController::class,'store'])->name('insert.rol_permisos');
     Route::post('/alta/rol_usuario',[FormsController::class,'store'])->name('insert.rol_usuario');
     Route::post('/alta/categoria_cobros',[FormsController::class,'store'])->name('insert.categoria_cobros');

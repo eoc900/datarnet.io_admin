@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('form_creator', function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->string("titulo",64);
-            $table->string("hidden_identifier",64); //sin espacios
+            $table->string("hidden_identifier",64)->nullable(); //sin espacios
             $table->string("descripcion");
             $table->string("action",64);
             $table->string("nombre_documento",64);
             $table->foreignUuid("creadoPor");
             $table->boolean("es_publico")->default(0);
+            $table->string("ruta_banner")->nullable();
             $table->boolean("activo");
             $table->timestamps();
         });

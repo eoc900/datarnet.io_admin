@@ -3,7 +3,7 @@
  
 
 @include('components.sistema_cobros.response')
-
+<a href="{{ route('form_creator.index') }}" class="btn btn-primary my-5">Regresar al listado de formularios</a>
 <div class="card">
     <div class="card-header pt-3">
         <h5>{{ $titulo ?? '' }}</h5>

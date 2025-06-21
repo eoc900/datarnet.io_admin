@@ -11,15 +11,21 @@ class PermissionsSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            'ver reportes',
-            'crear reportes',
-            'editar reportes',
-            'eliminar reportes',
-            'gestionar usuarios',
-            'configurar sistema',
-            'cargar tabla documento excel',
-            'crear formulario',
-            'ver formulario'
+            'Generar tablas',
+            'Cargar tablas',
+            'Crear queries',
+            'Crear formularios',
+            'Crear liga',
+            'Crear dashboards',
+            'Crear informe',
+            'Ver queries',
+            'Ver archivos',
+            'Ver tablas',
+            'Ver informes',
+            'Ver formularios',
+            'Ver ligas',
+            'Borrar formularios',
+            'Eliminar tablas modulos'          
         ];
 
         foreach ($permissions as $name) {
@@ -34,13 +40,20 @@ class PermissionsSeeder extends Seeder
         $admin->syncPermissions(Permission::all());
 
         $owner->syncPermissions([
-            'ver reportes',
-            'crear reportes',
-            'editar reportes',
+            'Generar tablas',
+            'Cargar tablas',
+            'Crear formularios',
+            'Crear liga',
+            'Ver informes',
+            'Ver formularios',
+            'Ver ligas',
+            'Ver archivos',
+            'Ver tablas',
+            'Borrar formularios'
         ]);
 
         $colab->syncPermissions([
-            'ver reportes',
+            'Ver formularios'
         ]);
     }
 }

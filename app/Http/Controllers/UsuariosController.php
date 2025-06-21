@@ -26,41 +26,69 @@ class UsuariosController extends Controller
 {
 
     public function index(Request $request){
-        $filter = [         // $filter -> recuerda crear el query en la clase correspondiente ["filtro"=>"nombreMetodo"]
-            "Email"=>"getUserByEmail"
-        ];
-        $user = new User();
-        $usuarios =Filter::runQuerySingleParam($request,$user,$filter,"getUserByEmail");
-        $count = $usuarios->count();
-        $usuarios = $usuarios->paginate(10);
-        $usuarios->appends(["page"=>$request->page,"search"=>$request->search,"filter"=>$request->filter]);
-         return view('administrador.usuarios.index',[
-            "title"=>"Usuario",
-            "breadcrumb_title" => "Usuarios",
-            "breadcrumb_second" => "Lista Usuarios",
-            "hasDynamicTable"=>true,
-            "rowCheckbox"=>true,
-            "idKeyName"=>"id",
-            "keys"=>array('id',"name",'email',"telephone","estado"),
-            "columns"=>array("#Ref","Nombre","Email","Telefono","Estado"),
-            "indicadores"=>true, // esta funcion esta enlzada a la propiedad de abajo (botones) pero también debes tener una columna llamada estado
-            "botones"=>array('Inactivo'=>'btn-outline-danger',
-                                'Activo'=>'btn-outline-success',
-                                'Bloqueado'=>'btn-outline-warning'),
-            "rowActions"=>array("show","edit","destroy"),
-            "data" => $usuarios,
-            "routeDestroy" => 'usuarios.destroy',
-            "routeCreate" => 'usuarios.create',
-            "routeEdit" => 'usuarios.edit',
-            "routeShow" => 'usuarios.show',
-            "routeIndex" => 'usuarios.index',
-            "ajaxRenderRoute" => '/html/tableTareas',
-            "reRenderSection" => ".dynamic_table",
-            "searchFor"=>$request->search,
-            "count" => $count,
-            "filtros_busqueda"=>User::$estados,
-            "txtBtnCrear"=>"Agregar un usuario"
-        ]);
+        $searchFor = "";
+        $filter = "";
+        $page = 1;
+        if($request->search != "" && isset($request->search)){
+            $searchFor = $request->search;
+        }
+        if($request->filter != "" && isset($request->filter)){
+            $filter = $request->filter;
+        }
+        if($request->page != "" && isset($request->page)){
+            $page = $request->page;
+        }
+
+
+
+        $registros = DB::table('users')
+                    ->where(DB::raw("CONCAT(users.name, ' ',users.lastname)"),"like","%{$searchFor}%")
+                    ->orWhere('users.email','like',"%{$searchFor}%")
+                    ->orWhere('users.telephone','like',"%{$searchFor}%")
+                    ->orWhere('users.estado','like',"%{$searchFor}%");
+   
+                    $conf = [
+                        "title"=>"Lista de usuario",
+                        "titulo_breadcrumb" => "Usuarios",
+                        "subtitulo_breadcrumb" => "Usuarios",
+                        "go_back_link"=>"#",
+                        "formulario"=>"usuarios", // se utiliza para el form tag
+                        "tabla"=>"tabla.usuarios",
+                        "view"=>"sistema_cobros.tablas.plantilla", //No cambia, se mantiene así
+                        "urlRoute"=>"users",
+                        "confTabla"=>array(
+                            "tituloTabla"=>"Mis usuarios",
+                            "placeholder"=>"Buscar usuarios",
+                            "idSearch"=>"buscarInfoTabla",
+                            "valueSearch"=>$searchFor,
+                            "idBotonBuscar"=>"btnBuscarTabla",
+                            "botonBuscar"=>"Buscar",
+                            "filtrosBusqueda"=>array(["key"=>"nombre","option"=>"Por nombre completo"],
+                            ["key"=>"correo","option"=>"Por correo electrónico"],["key"=>"telefono","option"=>"Telefono"],
+                            ["key"=>"estado","option"=>"Estado"]),
+                            "rowCheckbox"=>true,
+                            "idKeyName"=>"id",
+                            "keys"=>array("id","name","lastname","email","telephone","estado"),
+                            "columns"=>array("#Ref","Nombre","Apellidos","Email","Teléfono","Estado"),
+                            "indicadores"=>true,
+                            "botones"=>array('Inactivo'=>'btn-outline-danger',
+                                                'Activo'=>'btn-outline-primary',
+                                                'Bloqueado'=>'btn-outline-warning'),
+                            "rowActions"=>array("show","edit","destroy"),
+                            "data" => $registros->paginate(5)->appends(["page"=>$page,"search"=>$searchFor,"filter"=>$filter]),
+                            "routeDestroy" => 'users.destroy',
+                            "routeCreate" => 'users.create',
+                            "routeEdit" => 'users.edit',
+                            "routeShow" => 'users.show',
+                            "routeIndex" => 'tabla',
+                            "ajaxRenderRoute" => '/html/tabletareas',
+                            "reRenderSection" => ".dynamic_table",
+                            "searchFor"=>$searchFor,
+                            "count" => $registros->count(),
+                            "txtBtnCrear"=>"Agregar un usuario"
+                        )];
+
+        return view('sistema_cobros.usuarios.index',$conf);
     }
 
     public function show($id){
@@ -82,20 +110,20 @@ class UsuariosController extends Controller
     public function create(){
         $user = new User();
         $estados = $user::$estados;
-        $categorias = $user->tipo;
+        $roles = Role::all();
         
-         return view('administrador.usuarios.create',[
+         return view('sistema_cobros.usuarios.create',[
             "title"=>"Usuarios",
             "breadcrumb_title" => "Usuarios",
             "breadcrumb_second" => "Visualizar usuarios",
             "estados" => $estados,
-            "categorias" => $categorias,
-            "routeDestroy" => 'usuarios.destroy',
-            "routeCreate" => 'usuarios.create',
-            "routeStore" => 'usuarios.store',
-            "routeEdit" => 'usuarios.edit',
-            "routeShow" => 'usuarios.show',
-            "routeIndex" => 'usuarios.index'
+            "roles" => $roles,
+            "routeDestroy" => 'users.destroy',
+            "routeCreate" => 'users.create',
+            "routeStore" => 'users.store',
+            "routeEdit" => 'users.edit',
+            "routeShow" => 'users.show',
+            "routeIndex" => 'users.index'
         ]);
 
     }
@@ -130,21 +158,21 @@ class UsuariosController extends Controller
         $estados = $user::$estados;
         $categorias = $user->tipo;
         $user = User::where('id','=',$id)->firstOrFail();
-        return view('administrador.usuarios.edit',[
+        return view('sistema_cobros.usuarios.edit',[
             "title"=>"Usuario",
             "breadcrumb_title" => "Usuario",
             "breadcrumb_second" => "Editar Usuario",
             "estados" => $estados,
             "categorias"=>$categorias,
             "user" => $user,
-            "routeUpdate" => 'usuarios.update',
+            "routeUpdate" => 'users.update',
         ]);
 
     }
 
     public function update(UpdateUsuariosRequest $request, $id){
 
-        if(Auth::user()->hasRole("Admin")){
+        if(Auth::user()->hasRole(["Owner","Administrador tecnológico"])){
             $users = User::findOrFail($id);
             $users->update([
                 'name' => $request->input('name'),
@@ -274,8 +302,9 @@ class UsuariosController extends Controller
 
     }
 
-    public function vistaModificarRoles(){
+    public function vistaModificarRoles(Request $request){
         $roles = DB::table("roles")->get();
+        $success = $request->success ?? false;
         return view('administrador.usuarios.programar_roles',[
             "title"=>"Modificar Roles",
             "titulo_breadcrumb"=>'Usuarios',
@@ -286,28 +315,44 @@ class UsuariosController extends Controller
             "titulo_formulario"=>"",
             "routeStore"=>"insert.rol_usuario",
             "accion"=>"alta",
-            "formulario"=>"user_roles"]);
+            "formulario"=>"user_roles",
+            "success"=>$success]);
     }
 
-    public function removeRol(Request $request){
-        $request->validate([
-                'rol'=>'required|string|max:42',
-                'user_id'=>'required|string|max:36'
-        ]);
-        $mensajes = new Mensajes(); // registro de respuestas add(["mensaje"=>"Almacenamiento de acta de nacimiento exitosa","respuesta"=>true])
+    // ASIGNAR ROLE A USUARIO EXISTENTE
+    public function agregarRoleUsuario(Request $request){
+         $request->validate([
+                'rol'=>'required|string|max:64',
+                'user_id'=>'required|string|max:36',
+                'hidden_input'=>'required|string',
+            ]);            
+            $user = User::find($request->user_id);
+            $user->assignRole($request->rol);
+            return back()->with("success","Nuevo rol añadido al usuario exitosamente.");
+    }
+    // ASIGNAR ROLE A USUARIO EXISTENTE
 
-        if(auth::user()->email=="eoc900@gmail.com"){
-               $user = User::find($request->user_id);
+    public function removeRol(Request $request){
+          $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'rol' => 'required|string|exists:roles,name',
+            ]);
+
+
+
+        // SÓLO EL OWNER DEL PANEL PUEDE ELIMINAR ROLES O USER CON CORREO eoc900@gmail.com
+        if(auth::user()->email=="eoc900@gmail.com" || Auth::user()->hasRole(["owner",'administrador tecnológico'])){
+            $user = User::find($request->user_id);
             if ($user->hasRole($request->rol)) {
                 // Elimina el rol del usuario
                 $user->removeRole($request->rol);
             }
-            $mensajes->add(array("response"=>true,"message"=>"Se eliminó el rol: ".$request->rol));
+              return response()->json(['success' => 'Rol eliminado exitosamente']);
 
         }else{
-            $mensajes->add(array("response"=>true,"message"=>"Lo sentimos algo salió mal, no se pudo eliminar el rol"));
+              return response()->json(['error' => 'Hubo un error, verifica que cuentes con los permisos']);
         }
-     
-        return back()->with("mensajes",$mensajes->log);
+        // SÓLO EL OWNER DEL PANEL PUEDE ELIMINAR ROLES O USER CON CORREO eoc900@gmail.com
+
     }
 }

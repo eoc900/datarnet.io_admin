@@ -1,6 +1,8 @@
 
 @if(isset($data) && count($data)>0)
-<table class="table align-middle">
+<div class="card">
+    <div class="card-body pt-4">
+        <table class="table align-middle">
 <thead class="table-light">     
 <tr>
     @if($rowCheckbox)
@@ -76,7 +78,8 @@
     @endfor
 </tbody>
 </table>
-
+    </div>
+</div>
 {{ $data->links() }}
 @else
 

@@ -38,9 +38,13 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Contamos los usuarios existentes
+        $usuariosExistentes = User::count();
+
+        // Creamos al nuevo usuario
         $user = User::create([
             'name' => $request->name,
-            'telephone'=>$request->telephone,
+            'telephone' => $request->telephone,
             'lastname' => $request->lastname,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -48,10 +52,18 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        $info = User::find($user->id);
-        $info->assignRole('Guest');
+        // Asignamos el rol basado en el número de usuarios
+        if ($usuariosExistentes === 0) {
+            $user->assignRole('Administrador tecnológico');
+        } elseif ($usuariosExistentes === 1) {
+            $user->assignRole('Owner');
+        } else {
+            $user->assignRole('Colaborador'); // o cualquier otro rol por defecto
+        }
+
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
     }
+
 }

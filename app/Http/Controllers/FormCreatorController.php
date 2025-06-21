@@ -101,11 +101,32 @@ class FormCreatorController extends Controller
      */
     public function store(Request $request)
     {
-      //  dd($request->all());
+      
+        $request->validate([
+            'banner_formulario' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2560', // 2560 KB = 2.5MB
+            'nombre_documento' => 'required|string'
+        ]);
+
+       if ($request->hasFile('banner_formulario')) {
+            $archivo = $request->file('banner_formulario');
+
+            // Verifica que el archivo es válido
+            if ($archivo->isValid()) {
+                $nombreArchivo = Str::uuid() . '.' . $archivo->getClientOriginalExtension();
+                $ruta = $archivo->storeAs('banners_formularios', $nombreArchivo, 'public'); // <-- este es el correcto
+            } else {
+                // Si llega aquí es porque hubo un error al subir
+                throw new \Exception('El archivo no es válido');
+            }
+        }
+
+
+
+        $nombre_documento_limpio = Str::slug($request->nombre_documento, '_');
 
         $id = (string) Str::uuid();
         $titulo_formulario = $request->nombre_formulario;
-        $nombre_documento = $request->nombre_documento.".json";
+        $nombre_documento = $nombre_documento_limpio.".json";
         $hidden_identifier = $request->identificador_action; //ejemplo: generar_archivo_xml, consultar_titulo,
         $descripcion = $request->descripcion;
         $action = $request->action; // el default para procesar los datos enviados
@@ -121,10 +142,11 @@ class FormCreatorController extends Controller
         $form->hidden_identifier = $hidden_identifier;
         $form->descripcion = $descripcion;
         $form->action = $action;
-        $form->nombre_documento = $nombre_documento;
+        $form->nombre_documento = $nombre_documento_limpio;
         $form->creadoPor = $creadoPor;
         $form->es_publico = $request->has('formulario_publico') ? 1 : 0;
         $form->activo = $activo;
+        $form->ruta_banner = $ruta ?? null;
         $form->save();
 
         // PENDIENTE: Vamos a iterar el ->input("input"); es donde estará marcado el tipo de input
@@ -139,15 +161,16 @@ class FormCreatorController extends Controller
             "action"=>$form->action,
             "update"=>'modificar.registro', // fijo
             "enlazar_tabla" => $request->enlazar_tabla??"false",
-            "tabla"=>$request->id_tabla_db ?? "modulo_".$request->nombre_documento,
+            "tabla"=>$request->id_tabla_db ?? "modulo_".$nombre_documento_limpio,
             "creadoPor"=>$form->creadoPor,
-            "inputs"=>$inputs
+            "inputs"=>$inputs,
+            "ruta_banner"=>$ruta ?? null
         ];
             
 
         $jsonData = json_encode($resultados, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         // Guardar en storage/app
-        Storage::disk('local')->put('formularios/'.$form->nombre_documento, $jsonData);
+        Storage::disk('local')->put('formularios/'.$nombre_documento_limpio.".json", $jsonData);
 
         return back()->with("success","El formulario fue creado con éxito.");
 
@@ -266,7 +289,7 @@ class FormCreatorController extends Controller
      */
     public function destroy(string $id)
     {
-        if(Auth::user()->can("Borrar titulos generados")){
+        if(Auth::user()->can("Borrar formularios")){
             $form = FormCreator::find($id);
             if (!$form) {
                 return back()->with('error','Formulario no encontrado');
@@ -973,12 +996,14 @@ public function rutaAutomatica(Request $request)
 
 public function procesarTablaModal(Request $request){
         Log::info('Datos del request:', $request->all());
+
+
         $nombreArchivo = $request->nombre_archivo;
         $campos = $request->input('campos', []);
         $prefijo = "modulo_";      
         // 2. Agregar columnas y prepara columnas de nueva tabla en db
         foreach ($campos as $tabla_nombre => $columnas_info) {
-                $nuevo_nombre = $prefijo.$tabla_nombre;
+                $nuevo_nombre = $prefijo.Str::slug($tabla_nombre, '_');
                 // Omitir tablas vacías o mal formadas
                 if (!is_array($columnas_info) || count(array_filter($columnas_info, fn($c) => !empty($c['columna'] ?? null))) === 0) {
                     continue;
@@ -1110,6 +1135,10 @@ public function rutaPublica(Request $request){
     $request->validate([
         "nombre_documento"=>"required|string|max:82"
     ]);
+
+
+    // Obtenener información de la liga 
+    $liga = LigaFormulario::where('id',$request->liga)->firstOrFail();
     
     //1. Obtener la estructura del formulario
     $nombre_documento = $request->nombre_documento;
@@ -1159,6 +1188,11 @@ public function rutaPublica(Request $request){
 
     //5. Hacer el insert
     DB::table($tabla)->insert($datos);
+
+
+    if($liga){
+        return redirect($liga->redirect_url??'/');
+    }
 
     return back()->with("success","Se ha insertado el registro exitosamente!");
 }

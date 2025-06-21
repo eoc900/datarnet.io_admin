@@ -8,10 +8,10 @@
 <div class="card-header pt-3">
     <h5>Nueva tabla</h5>
 </div>
-<div class="card-body">
+<div class="card-body p-5">
     @if (isset($success))
         <div class="col-12">
-            <h3>Información del Archivo:</h3>
+            <p>Información del Archivo:<p>
             <ul>
                 <li><strong>Nombre:</strong> {{ $archivo_info["nombre"] }}</li>
                 <li><strong>Tipo:</strong> {{ $archivo_info["tipo"] }}</li>

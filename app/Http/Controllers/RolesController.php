@@ -5,15 +5,79 @@ use Spatie\Permission\Models\Role;
 use App\Models\Tablas;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
+use DateTime;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule; // Add this import statement
+
 
 class RolesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $searchFor = "";
+        $filter = "";
+        $page = 1;
+        if($request->search != "" && isset($request->search)){
+            $searchFor = $request->search;
+        }
+        if($request->filter != "" && isset($request->filter)){
+            $filter = $request->filter;
+        }
+        if($request->page != "" && isset($request->page)){
+            $page = $request->page;
+        }
+        $registros = DB::table('roles')
+                    ->where(function ($query) use ($searchFor) {
+                        $query->where('name', 'like', "%{$searchFor}%");
+                    })
+                    ->whereNotIn('name', ['administrador tecnológico', 'owner']);
+                    $conf = [
+                        "title"=>"Lista de Roles",
+                        "titulo_breadcrumb" => "Roles",
+                        "subtitulo_breadcrumb" => "Roles",
+                        "go_back_link"=>"#",
+                        "formulario"=>"roles", // se utiliza para el form tag
+                        "tabla"=>"tabla.roles",
+                        "view"=>"sistema_cobros.tablas.plantilla", //No cambia, se mantiene así
+                        "urlRoute"=>"roles",
+                        "confTabla"=>array(
+                            "tituloTabla"=>"Mis Roles",
+                            "placeholder"=>"Buscar roles",
+                            "idSearch"=>"buscarInfoTabla",
+                            "valueSearch"=>$searchFor,
+                            "idBotonBuscar"=>"btnBuscarTabla",
+                            "botonBuscar"=>"Buscar",
+                            "filtrosBusqueda"=>array(["key"=>"nombre","option"=>"Por nombre"]),
+                            "rowCheckbox"=>true,
+                            "idKeyName"=>"id",
+                            "keys"=>array('id',"name"),
+                            "columns"=>array("#Ref","Role"),
+                            "indicadores"=>false,
+                            "botones"=>array('Pendiente'=>'btn-outline-danger',
+                                                'En Progreso'=>'btn-outline-primary',
+                                                'Completada'=>'btn-outline-success',
+                                                'Aprobada'=>'btn-outline-info',
+                                                'Reformular'=>'btn-outline-warning'),
+                            "rowActions"=>array("show","edit","destroy"),
+                            "data" => $registros->paginate(5)->appends(["page"=>$page,"search"=>$searchFor,"filter"=>$filter]),
+                            "routeDestroy" => 'roles.destroy',
+                            "routeCreate" => 'roles.create',
+                            "routeEdit" => 'roles.edit',
+                            "routeShow" => 'roles.show',
+                            "routeIndex" => 'tabla',
+                            "ajaxRenderRoute" => '/html/tabletareas',
+                            "reRenderSection" => ".dynamic_table",
+                            "searchFor"=>$searchFor,
+                            "count" => $registros->count(),
+                            "txtBtnCrear"=>"Agregar una tarea"
+                        )];
+            return view('sistema_cobros.roles.index',$conf);
     }
 
     /**
@@ -21,7 +85,14 @@ class RolesController extends Controller
      */
     public function create()
     {
-        
+    return view('sistema_cobros.roles.create',[
+        "title"=>"Generar rol",
+        "titulo_breadcrumb" => "Agregar un rol",
+        "subtitulo_breadcrumb" => "Roles",
+        "go_back_link"=>"#",
+        "titulo_formulario"=>"Agregar un nuevo rol",
+        "routeStore"=>"roles.insert"
+    ]);  
     }
 
     /**
@@ -29,7 +100,11 @@ class RolesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'rol'=>'required|string|max:32'
+        ]);
+        $role = Role::create(['name' => $request->rol]);
+        return back()->with("success","Rol creado existosamente.");
     }
 
     /**
@@ -43,8 +118,8 @@ class RolesController extends Controller
         $permissions = $role->permissions;
 
         // Retorna una vista (puedes crear una vista llamada 'roles.show') y pasarle el rol y sus permisos
-        return view('sistema_cobros.pages.roles.show', [
-            "title"=>"Calendario tareas",
+        return view('sistema_cobros.roles.show', [
+            "title"=>$role->name,
             "breadcrumb_title" => "Calendario general",
             "breadcrumb_second" => "Calendario",
             "role"=>$role,

@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\DashboardsGraphs;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardsController extends Controller
 {
     
     public function index(){
+        $user = Auth::user()->name;
         return view("general.pre_made.pages.guest_dashboard",[
-            "title"=>"Administrar | Maestros"
+            "title"=>"Bienvenido ".$user
 
         ]);
     }

@@ -12,9 +12,63 @@ class PermisosController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-         
+        $searchFor = "";
+        $filter = "";
+        $page = 1;
+        if($request->search != "" && isset($request->search)){
+            $searchFor = $request->search;
+        }
+        if($request->filter != "" && isset($request->filter)){
+            $filter = $request->filter;
+        }
+        if($request->page != "" && isset($request->page)){
+            $page = $request->page;
+        }
+        $registros = DB::table('permissions')
+                    ->where("name","like","%{$searchFor}%");
+                    $conf = [
+                        "title"=>"Lista de permisos",
+                        "titulo_breadcrumb" => "Permisos",
+                        "subtitulo_breadcrumb" => "Permisos",
+                        "go_back_link"=>"#",
+                        "formulario"=>"permisos", // se utiliza para el form tag
+                        "tabla"=>"tabla.permisos",
+                        "view"=>"sistema_cobros.tablas.plantilla", //No cambia, se mantiene así
+                        "urlRoute"=>"permisos",
+                        "confTabla"=>array(
+                            "tituloTabla"=>"Mis permisos",
+                            "placeholder"=>"Buscar permisos",
+                            "idSearch"=>"buscarInfoTabla",
+                            "valueSearch"=>$searchFor,
+                            "idBotonBuscar"=>"btnBuscarTabla",
+                            "botonBuscar"=>"Buscar",
+                            "filtrosBusqueda"=>array(["key"=>"nombre","option"=>"Por nombre"]),
+                            "rowCheckbox"=>true,
+                            "idKeyName"=>"id",
+                            "keys"=>array('id',"name"),
+                            "columns"=>array("#Ref","Permiso"),
+                            "indicadores"=>false,
+                            "botones"=>array('Pendiente'=>'btn-outline-danger',
+                                                'En Progreso'=>'btn-outline-primary',
+                                                'Completada'=>'btn-outline-success',
+                                                'Aprobada'=>'btn-outline-info',
+                                                'Reformular'=>'btn-outline-warning'),
+                            "rowActions"=>array("show","edit","destroy"),
+                            "data" => $registros->paginate(10)->appends(["page"=>$page,"search"=>$searchFor,"filter"=>$filter]),
+                            "routeDestroy" => 'permisos.destroy',
+                            "routeCreate" => 'permisos.create',
+                            "routeEdit" => 'permisos.edit',
+                            "routeShow" => 'permisos.show',
+                            "routeIndex" => 'tabla',
+                            "ajaxRenderRoute" => '/html/tabletareas',
+                            "reRenderSection" => ".dynamic_table",
+                            "searchFor"=>$searchFor,
+                            "count" => $registros->count(),
+                            "txtBtnCrear"=>"Agregar un permiso"
+                        )];
+             return view('sistema_cobros.permisos.index',$conf);
     }
 
     /**
@@ -22,7 +76,18 @@ class PermisosController extends Controller
      */
     public function create()
     {
-        //
+        return view('sistema_cobros.permisos.create', [
+                        "title"=>"Generar permiso",
+                        "titulo_breadcrumb" => "Agregar un permiso",
+                        "subtitulo_breadcrumb" => "Permisos",
+                        "go_back_link"=>"#",
+                        "formulario"=>"permisos", // se utiliza para el form tag
+                        "titulo_formulario"=>"Agregar un nuevo permiso",
+                        "view"=>"sistema_cobros.formularios.permisos",
+                        "accion"=>"alta",
+                        "routeStore"=>"insert.permisos",
+                        
+        ]);
     }
 
     /**
@@ -30,7 +95,14 @@ class PermisosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'permiso'=>'required|string|max:42'
+        ]);
+        $permission = Permission::create(['name' => $request->permiso]);
+        if($permission){
+            return back()->with("success","El permiso fue guardado existosamente.");
+        }
+        return back()->with("error","El permiso fue no fue guardado.");
     }
 
     /**
@@ -42,7 +114,7 @@ class PermisosController extends Controller
         // Obtener los usuarios que tienen dicho permiso
         $users = User::permission($permiso->name)->get();
 
-        return view('sistema_cobros.pages.permisos.show',
+        return view('sistema_cobros.permisos.show',
                     [
                     "permiso"=>$permiso,
                     "users"=>$users,

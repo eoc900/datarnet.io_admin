@@ -1,12 +1,16 @@
 @extends('landing_page.layouts.index')
 @section("content")
  
-
+@php
+    $ruta_banner = $ruta_banner 
+        ? Storage::url($ruta_banner) 
+        : asset('dashboard_resources/imagenes/banner-default.jpg');
+@endphp
 
 
    <!-- undergraduate breadcrumb start -->
       <section class="tp-breadcrumb__area pt-160 pb-150 p-relative z-index-1 fix">
-      <div class="tp-breadcrumb__bg" data-background="https://cegto.com.mx/centro_estudios/assets/img/banner/centro-de-estudios-de-irapuato.jpg"></div>
+      <div class="tp-breadcrumb__bg"  data-background="{{ $ruta_banner }}"></div>
       <div class="container">
          <div class="row align-items-center">
             <div class="col-sm-12">
@@ -35,6 +39,7 @@
             <x-lista-mensajes/>
             <input type="hidden" name="identificador_action" value="{{ $hidden_identifier ?? '' }}">
             <input type="hidden" name="nombre_documento" value="{{ $nombre_documento ?? '' }}">
+            <input type="hidden" name="liga" value="{{ $liga ?? '' }}">
             
        
             {{-- USO: ITERACIÓN Para poner cada componente de formulario --}}

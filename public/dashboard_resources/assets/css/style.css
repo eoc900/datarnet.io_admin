@@ -276,3 +276,27 @@ ul.mm-collapse li{
 .drop-drop{
    min-height: 110px;
 }
+
+/* Navbar */
+/* Color BG DARK: #272727*/
+
+
+.orbitron {
+   font-family: "Orbitron", sans-serif;
+   font-optical-sizing: auto;
+   font-weight: 400;
+   font-style: normal;
+}
+.sidebar-wrapper .sidebar-header,.top-header .navbar{
+   background-color: #272727;
+}
+.sidebar-wrapper .sidebar-header{
+   border-right: 1px solid rgb(69, 69, 69);
+}
+.sidebar-wrapper .sidebar-header .logo-name{
+   color: white;
+   font-size: 20px;
+}
+body{
+   background-color: #f4f4f4;
+}

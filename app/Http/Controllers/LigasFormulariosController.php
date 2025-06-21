@@ -169,12 +169,13 @@ class LigasFormulariosController extends Controller
             if($resultado){
                 
                 $formulario = FormCreator::find($resultado->formulario_id);
-                // Construimos la ruta del archivo
                 $ruta = 'formularios/' . $formulario->nombre_documento;
                 $contenido = Storage::get($ruta);
                 $jsonDecoded = json_decode($contenido, true);
                 $jsonDecoded["title"] = "Lectura formulario";
                 $jsonDecoded["nombre_documento"] = $formulario->nombre_documento;
+                $jsonDecoded["liga"] = $resultado->id;
+                $jsonDecoded['ruta_banner'] = $formulario->ruta_banner;
 
                 if($formulario->es_publico || $jsonDecoded["publico"] ){
                     return view("sistema_cobros.form_creator_ligas.formulario_publico",$jsonDecoded);
