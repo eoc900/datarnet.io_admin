@@ -242,6 +242,7 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/ajax/whereSimple',[AjaxHtmlController::class,'condicionWhereSimple'])->name("ajax.where_simple");
     Route::post('/ajax/whereGrupal',[AjaxHtmlController::class,'condicionWhereGrupal'])->name("ajax.where_grupal");
     Route::post('/ajax/funcion_agregada',[AjaxHtmlController::class,'camposFuncionAgregada'])->name("ajax.funcion_agregada");
+    Route::post('/ajax/eliminar_seccion_informes',[AjaxHtmlController::class,'eliminarSeccionInformes'])->name("ajax.eliminar_seccion_informe");
     Route::post('/ajax/caja_validacion',[AjaxHtmlController::class,'cajaValidacion'])->name("ajax.caja_validacion");
     Route::post('/ajax/tipo_dato_regla_validacion',[AjaxHtmlController::class,'tipoDatoReglaValidacion'])->name("ajax.tipo_dato_regla_validacion");
  

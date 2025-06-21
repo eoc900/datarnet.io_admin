@@ -57,7 +57,7 @@
 @endsection
 
 @push('filtros_funciones_show')
-<script>
+
 eventoActivarFiltrado();
 function eventoActivarFiltrado() {
     $('#filtrar').on('click', function (e) {
@@ -79,5 +79,5 @@ function eventoActivarFiltrado() {
         window.location.href = `/informes/${idInforme}?` + params.toString();
     });
 }
-</script>
+
 @endpush

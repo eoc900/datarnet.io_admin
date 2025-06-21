@@ -396,7 +396,7 @@ class AjaxHtmlController extends Controller
         $estructura["secciones"][] = $objeto;
         Storage::put($path, json_encode($estructura, JSON_PRETTY_PRINT));
 
-        return view('components.informes.render_config',$objeto);
+        return view('sistema_cobros.informes.componentes.render_config',$objeto);
     }
     //-----> MOSTRAR ELEMENTOS DE INFORMES
     public function dropdownGraficas(){
@@ -608,5 +608,31 @@ class AjaxHtmlController extends Controller
         "valor_funcion" => '',
         "valor_columna" => '',
         "valor_alias" => '']);
+    }
+
+    public function eliminarSeccionInformes(Request $request){
+        $id = $request->input('id');
+
+        // 1. Cargar estructura JSON como arreglo asociativo
+        $ruta = "informes/tmp/config_temp.json";
+        $estructura = json_decode(Storage::get($ruta), true);
+
+        // 2. Verificar si existe la clave 'secciones'
+        if (!isset($estructura['secciones']) || !is_array($estructura['secciones'])) {
+            return response()->json(['error' => 'Formato de archivo inválido.'], 400);
+        }
+
+        // 3. Filtrar las secciones para eliminar la que tenga ese ID
+        $estructura['secciones'] = array_filter($estructura['secciones'], function ($seccion) use ($id) {
+            return $seccion['id'] !== $id;
+        });
+
+        // 4. Reindexar el array (opcional)
+        $estructura['secciones'] = array_values($estructura['secciones']);
+
+        // 5. Guardar el archivo actualizado
+        Storage::put($ruta, json_encode($estructura, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+        return response()->json(['success' => true]);
     }
 }

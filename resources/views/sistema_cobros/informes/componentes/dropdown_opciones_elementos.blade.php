@@ -36,9 +36,10 @@
 
     <script>
     @push('insertar_espacio_configuracion')
-
+        @include('sistema_cobros.informes.scripts.eventos_elementos')
         agregarElemento();
         eventoClickSeccion();
+        activarEventoEliminarSeccion();
 
 
         function insertarElemento(){
@@ -59,6 +60,7 @@
                         console.log("se agregó el elemento siguiente: "+id);
                         abrirSideBar("Hola sidebar");
                         ajaxConfigElementData(id);
+                        activarEventoEliminarSeccion();
              
                         
                     }
@@ -97,6 +99,7 @@
                         activarEventosGrafica();
                         // Cada que se guarde una sección guardamos los filtros
                         guardarSeccionFormulario();
+
                         
                     }
             });
@@ -134,20 +137,23 @@
         }
 
         // Función para mostrar la configuración al dar click en una seccion
-        function eventoClickSeccion(){
-            $(".seccion").off();
-            $(".seccion").click(function(){
-                var data_seccion = $(this).attr("data-seccion");
-                $(this).addClass("seccion-seleccionada");
-                // Abrimos sidebar
-                abrirSideBar("Hola sidebar");
-                // Llamamos a la configuración guardada del componente o sección
-                ajaxConfigElementData(data_seccion);
-                arrastrarColumna();          
+       function eventoClickSeccion() {
+            $(document).off('click', '.seccion-body');
 
-                
+            $(document).on('click', '.seccion-body', function () {
+                const $seccion = $(this).closest('.seccion');
+                const data_seccion = $seccion.data('seccion');
+
+                $('.seccion').removeClass('seccion-seleccionada');
+                $seccion.addClass('seccion-seleccionada');
+
+                abrirSideBar("Configurando sección");
+                ajaxConfigElementData(data_seccion);
+                arrastrarColumna();
             });
         }
+
+
 
 
         // Función para actualizar el input oculto

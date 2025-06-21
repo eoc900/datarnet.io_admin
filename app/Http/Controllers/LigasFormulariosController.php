@@ -166,10 +166,15 @@ class LigasFormulariosController extends Controller
     public function formularioPublico(string $id){
         //dd($id);
             $resultado = LigaFormulario::where("slug",$id)->first();
-            if($resultado){
-                
+            
+            if($resultado){                
                 $formulario = FormCreator::find($resultado->formulario_id);
-                $ruta = 'formularios/' . $formulario->nombre_documento;
+                $nombre_documento = $formulario->nombre_documento;
+                // Asegurar que termina en ".json"
+                if (!Str::endsWith($nombre_documento, '.json')) {
+                    $nombre_documento .= '.json';
+                }
+                $ruta = 'formularios/' . $nombre_documento;            
                 $contenido = Storage::get($ruta);
                 $jsonDecoded = json_decode($contenido, true);
                 $jsonDecoded["title"] = "Lectura formulario";

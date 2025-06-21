@@ -10,28 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     
-
-    <style>
-       @media print, (max-width: 9999px) {
-            .seccion {
-                width: 100%;
-                max-width: 190mm;
-                margin: 0 auto;
-                page-break-after: always;
-                position: relative;
-            }
-            
-            /* Reset de estilos que pueden afectar la renderización */
-            .seccion * {
-                max-width: 100% !important;
-                transform: none !important;
-            }
-            .seccion-pdf .row {
-                margin-left: 0;
-                margin-right: 0;
-            }
-        }
-    </style>
       
 </head>
 <body>
@@ -51,8 +29,10 @@
     <script src="{{ asset('librerias_pdf/jspdf.umd.min.js') }}"></script>
     <script src="{{ asset('librerias_pdf/html2canvas.min.js') }}"></script>
 
+    {{-- FILTROS --}}
     @stack("date_filter_config")
     @stack("listado-filtros")
+    {{-- FILTROS --}}
    
 
     <script>
@@ -60,7 +40,9 @@
           
             @stack("text_filter_config")              
             @stack("funciones_sidebar")
-            @stack("insertar_espacio_configuracion")           
+            {{-- ELEMENTOS DE INFORME --}}
+            @stack("insertar_espacio_configuracion") 
+            {{-- ELEMENTOS DE INFORME --}}          
             @stack('funciones_graficas')
         });
     </script>

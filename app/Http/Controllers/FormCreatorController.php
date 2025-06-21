@@ -226,7 +226,14 @@ class FormCreatorController extends Controller
     public function show(string $id)
     {
         $Form = FormCreator::find($id);
-        $data = Storage::disk('local')->get('formularios/'.$Form->nombre_documento);
+        //1. Obtener la estructura del formulario
+        $nombre_documento = $Form->nombre_documento;
+        // Asegurar que termina en ".json"
+        if (!Str::endsWith($nombre_documento, '.json')) {
+            $nombre_documento .= '.json';
+        }
+
+        $data = Storage::disk('local')->get('formularios/'.$nombre_documento);
         $jsonDecoded = json_decode($data, true);
         $jsonDecoded["title"] = "Lectura formulario";
         $jsonDecoded["nombre_documento"] = $Form->nombre_documento;
@@ -311,6 +318,11 @@ class FormCreatorController extends Controller
                 switch($input){
                     case "select2":
                         $type = $input;
+                        
+                         // Aquí validamos si se activó la validación para ese índice
+                        $validaciones = $request->input("validacion_activada.$index")
+                            ? $request->input("reglas.$index")
+                            : false;
                         $tabla = $request->input("inputs")[$index]["tabla_fuente"];
                         $buscar_en = explode(",",$request->input("inputs")[$index]["campos_busqueda"]); // los campos where
                         $campos_concatenados = explode(",",$request->input("inputs")[$index]["campos_concatenados"]); // los campos where
@@ -345,12 +357,17 @@ class FormCreatorController extends Controller
                                 "placeholder"=>$label,
                                 "endpoint"=>$endpoint,
                                 "archivo"=>$documento_select2,
-                                "id"=>$id
+                                "id"=>$id,
+                                "validacion"=>$validaciones
                         ];
                         $inputs[] = $objeto;
                     break;
                     case "dropdown":
                         $type = $input;
+                        // Aquí validamos si se activó la validación para ese índice
+                        $validaciones = $request->input("validacion_activada.$index")
+                            ? $request->input("reglas.$index")
+                            : false;
                         $name = $request->input("name")[$index];
                         $label = $request->input("label")[$index];
                         $tabla = $request->input("inputs")[$index]["tabla_dropdown"];
@@ -362,12 +379,18 @@ class FormCreatorController extends Controller
                                 "option"=>$option,
                                 "value"=>$value,
                                 "name"=>$name,
-                                "label"=>$label
+                                "label"=>$label,
+                                "validacion"=>$validaciones
+
                             ];
                         $inputs[] = $objeto;
                     break;
                     case "radio":
                         $type = $input;
+                        // Aquí validamos si se activó la validación para ese índice
+                        $validaciones = $request->input("validacion_activada.$index")
+                            ? $request->input("reglas.$index")
+                            : false;
                         $name = $request->input("name")[$index];
                         $label = $request->input("label")[$index];
                         $radio = $request->input("inputs")[$index]["opciones_radio"];
@@ -377,12 +400,17 @@ class FormCreatorController extends Controller
                                 "type"=>$type,
                                 "opciones"=>$opciones,
                                 "name"=>$name,
-                                "placeholder"=>$label
+                                "placeholder"=>$label,
+                                "validacion"=>$validaciones
                             ];
                         $inputs[] = $objeto;
                     break;
                     case "text":
                         $type = $input;
+                        // Aquí validamos si se activó la validación para ese índice
+                        $validaciones = $request->input("validacion_activada.$index")
+                            ? $request->input("reglas.$index")
+                            : false;
                         $name = $request->input("name")[$index];
                         $label = $request->input("label")[$index];
                         $placeholder = $request->input("inputs")[$index]["placeholder"];
@@ -390,7 +418,8 @@ class FormCreatorController extends Controller
                                 "type"=>$type,
                                 "placeholder"=>$placeholder,
                                 "name"=>$name,
-                                "label"=>$label
+                                "label"=>$label,
+                                "validacion"=>$validaciones
                             ];
                         $inputs[] = $objeto;
                     break;
@@ -407,6 +436,10 @@ class FormCreatorController extends Controller
                     break;
                     case "email":
                         $type = $input;
+                        // Aquí validamos si se activó la validación para ese índice
+                        $validaciones = $request->input("validacion_activada.$index")
+                            ? $request->input("reglas.$index")
+                            : false;
                         $name = $request->input("name")[$index];
                         $label = $request->input("label")[$index];
                         $placeholder = $request->input("inputs")[$index]["placeholder"];
@@ -414,12 +447,17 @@ class FormCreatorController extends Controller
                                 "type"=>$type,
                                 "placeholder"=>$placeholder,
                                 "name"=>$name,
-                                "label"=>$label
+                                "label"=>$label,
+                                "validacion"=>$validaciones
                             ];
                         $inputs[] = $objeto;
                     break;
                     case "date":
                         $type = $input;
+                        // Aquí validamos si se activó la validación para ese índice
+                        $validaciones = $request->input("validacion_activada.$index")
+                            ? $request->input("reglas.$index")
+                            : false;
                         $name = $request->input("name")[$index];
                         $label = $request->input("label")[$index];
                         $formato = $request->input("inputs")[$index]["formato_fecha"];
@@ -427,12 +465,17 @@ class FormCreatorController extends Controller
                                 "type"=>$type,
                                 "formato"=>$formato,
                                 "name"=>$name,
-                                "label"=>$label
+                                "label"=>$label,
+                                "validacion"=>$validaciones
                             ];
                         $inputs[] = $objeto;
                     break;
                     case "datetime":
                         $type = $input;
+                        // Aquí validamos si se activó la validación para ese índice
+                        $validaciones = $request->input("validacion_activada.$index")
+                            ? $request->input("reglas.$index")
+                            : false;
                         $name = $request->input("name")[$index];
                         $label = $request->input("label")[$index];
                         $formato = $request->input("inputs")[$index]["formato_fecha"];
@@ -440,12 +483,17 @@ class FormCreatorController extends Controller
                                 "type"=>$type,
                                 "formato"=>$formato,
                                 "name"=>$name,
-                                "label"=>$label
+                                "label"=>$label,
+                                "validacion"=>$validaciones
                             ];
                         $inputs[] = $objeto;
                     break;
                     case "file":
                         $type = $input;
+                        // Aquí validamos si se activó la validación para ese índice
+                        $validaciones = $request->input("validacion_activada.$index")
+                            ? $request->input("reglas.$index")
+                            : false;
                         $name = $request->input("name")[$index];
                         $label = $request->input("label")[$index];
                         $directorio = $request->input("inputs")[$index]["storage_directory"]??"archivos_de_formulario";
@@ -458,12 +506,17 @@ class FormCreatorController extends Controller
                                 "label"=>$label,
                                 "formatos"=>$formatos,
                                 "file_size"=>$file_size,
-                                "directorio"=>$directorio
+                                "directorio"=>$directorio,
+                                "validacion"=>$validaciones
                             ];
                         $inputs[] = $objeto;
                     break;
                     case "checkbox":
                         $type = $input;
+                        // Aquí validamos si se activó la validación para ese índice
+                        $validaciones = $request->input("validacion_activada.$index")
+                            ? $request->input("reglas.$index")
+                            : false;
                         $name = $request->input("name")[$index];
                         $label = $request->input("label")[$index];
                         $enlazable = $request->input("inputs")[$index]["enlazado"] ?? false;
@@ -481,7 +534,8 @@ class FormCreatorController extends Controller
                                 "textos"=>$textos,
                                 "valores_tabla"=>$valores_tabla,
                                 "textos_tabla"=>$textos_tabla,
-                                "label"=>$label
+                                "label"=>$label,
+                                "validacion"=>$validaciones
                             ];
                         $inputs[] = $objeto;
                     break;
@@ -936,7 +990,12 @@ public function rutaAutomatica(Request $request)
         "nombre_documento" => "required|string|max:82"
     ]);
 
+    //1. Obtener la estructura del formulario
     $nombre_documento = $request->nombre_documento;
+    // Asegurar que termina en ".json"
+    if (!Str::endsWith($nombre_documento, '.json')) {
+        $nombre_documento .= '.json';
+    }
     $data = Storage::disk('local')->get('formularios/' . $nombre_documento);
     $jsonDecoded = json_decode($data, true);
 
@@ -1142,6 +1201,10 @@ public function rutaPublica(Request $request){
     
     //1. Obtener la estructura del formulario
     $nombre_documento = $request->nombre_documento;
+    // Asegurar que termina en ".json"
+    if (!Str::endsWith($nombre_documento, '.json')) {
+        $nombre_documento .= '.json';
+    }
     $data = Storage::disk('local')->get('formularios/'.$nombre_documento);
     $jsonDecoded = json_decode($data, true);
 

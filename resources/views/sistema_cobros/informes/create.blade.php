@@ -38,26 +38,15 @@
     <hr>
 
     <div class="card-body bg-light">
-         <!-- Aquí tu contenido con Bootstrap y gráficas ApexCharts -->
-        <div class="col-sm-12 mb-5">
-                <h1 class="text-center">Reporte PDF</h1>
-        </div>
-        <div id="contenido-para-pdf" class="row p-3 align-items-start bg-white">
-           
-            
+         <!-- Aquí tu contenido con Bootstrap y gráficas ApexCharts -->      
+        <div id="contenido-para-pdf" class="row p-3 align-items-start bg-white">                       
             {{-- CARGA DE SECCIONES GUARDADAS EN config_temp.json --}}
             @if(isset($estructura["secciones"]))
                     @foreach ($estructura["secciones"] as $item)
                         @include('sistema_cobros.informes.componentes.render_config',$item)
                     @endforeach
-            @endif
-
-           
-            {{-- <div class="col-sm-6 mt-5 seccion">
-                  <div id="grafica" class="border"></div>
-            </div> --}}
-          
-            
+            @endif   
+            {{-- CARGA DE SECCIONES GUARDADAS EN config_temp.json --}}                   
         </div>
 
         <!-- Botón para generar PDF -->
