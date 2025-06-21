@@ -207,12 +207,7 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/ajax/tabla_cobros',[AjaxHtmlController::class,'tablaCobros']);
     Route::post('/ajax/rolesUsuario',[AjaxHtmlController::class,'listaRolesUsuario']);
     Route::post("/ajax/sistemas_ac_escuela",[AjaxHtmlController::class,'sistemasAcademicosEscuela']);
-    Route::post("/ajax/cuentasAlumno",[AjaxHtmlController::class,'cuentasDeAlumno']);
-    Route::post('/ajax/cargosCuenta',[AjaxHtmlController::class,'cargosDeCuentaAlumno']);
-    Route::post('/ajax/pagosCuenta',[AjaxHtmlController::class,'pagosDeCuentaAlumno']);
-    Route::post('/ajax/costosConceptos',[AjaxHtmlController::class,'conceptosRelacionadosAlumno']);
     Route::post('/ajax/preview_cuenta',[AjaxHtmlController::class,'previewCuenta']);
-    Route::post('/ajax/pagos_pendientes',[AjaxHtmlController::class,'checkboxPagosPendientes']);
     Route::post('/ajax/columnas_tabla',[AjaxHtmlController::class,'columnasTablaModulo']);
     Route::post('/ajax/dropdownJoins',[AjaxHtmlController::class,'dropdownJoins']);
     Route::post('/ajax/dropdownWhereOperators',[AjaxHtmlController::class,'dropdownWhereOperators']);
@@ -247,6 +242,9 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/ajax/whereSimple',[AjaxHtmlController::class,'condicionWhereSimple'])->name("ajax.where_simple");
     Route::post('/ajax/whereGrupal',[AjaxHtmlController::class,'condicionWhereGrupal'])->name("ajax.where_grupal");
     Route::post('/ajax/funcion_agregada',[AjaxHtmlController::class,'camposFuncionAgregada'])->name("ajax.funcion_agregada");
+    Route::post('/ajax/caja_validacion',[AjaxHtmlController::class,'cajaValidacion'])->name("ajax.caja_validacion");
+    Route::post('/ajax/tipo_dato_regla_validacion',[AjaxHtmlController::class,'tipoDatoReglaValidacion'])->name("ajax.tipo_dato_regla_validacion");
+ 
     
  
     

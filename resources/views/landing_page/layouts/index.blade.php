@@ -3,14 +3,14 @@
 <head>
 @include('landing_page.partials.head')
 </head>
-<body>
-@include('landing_page.partials.header')
+<body class="bg-light">
+
 
 
     
         @yield('content')
 
-@include('landing_page.partials.footer')
+
 @include('landing_page.partials.scripts')
 
    

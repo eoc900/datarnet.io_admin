@@ -271,48 +271,98 @@ class AjaxHtmlController extends Controller
     public function formCreatorDropdownInputConfig(Request $request){
         $tablas = DatabaseService::obtenerTablasConPrefijo('modulo_');
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
-        return view('components.form_creator.dropdown_config',["tablas"=>$tablas,"subcampo"=>$subcampo]);
+        return view('components.form_creator.dropdown_config',["tablas"=>$tablas,"subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
     public function formCreatorSelect2InputConfig(Request $request){
         $tablas = DatabaseService::obtenerTablasConPrefijo('modulo_');
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
-        return view('components.form_creator.select2_config',["tablas"=>$tablas,"tabla_arrastrable"=>true,"subcampo"=>$subcampo]);
+        return view('components.form_creator.select2_config',["tablas"=>$tablas,"tabla_arrastrable"=>true,"subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
     public function formCreatorRadioConfig(Request $request){
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
-        return view('components.form_creator.radio_config',["subcampo"=>$subcampo]);
+        return view('components.form_creator.radio_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
     public function formCreatorDateConfig(Request $request){
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
-        return view('components.form_creator.date_config',["subcampo"=>$subcampo]);
+        return view('components.form_creator.date_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
     public function formCreatorDatetimeConfig(Request $request){
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
-        return view('components.form_creator.datetime_config',["subcampo"=>$subcampo]);
+        return view('components.form_creator.datetime_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
     public function formCreatorTextConfig(Request $request){
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
-        return view('components.form_creator.text_config',["subcampo"=>$subcampo]);
+        return view('components.form_creator.text_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
     public function formCreatorEmailConfig(Request $request){
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
-        return view('components.form_creator.email_config',["subcampo"=>$subcampo]);
+        return view('components.form_creator.email_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
     public function formCreatorFileConfig(Request $request){
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
-        return view('components.form_creator.file_config',["subcampo"=>$subcampo]);
+        return view('components.form_creator.file_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
     public function formCreatorCheckboxConfig(Request $request){
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
-        return view('components.form_creator.checkbox_config',["subcampo"=>$subcampo]);
+        return view('components.form_creator.checkbox_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
     public function formCreatorHiddenInputConfig(Request $request){
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
-        return view('components.form_creator.hidden_input_config',["subcampo"=>$subcampo]);
+        return view('components.form_creator.hidden_input_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
     public function formCreatorMultiItemConfig(Request $request){
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
         return view('components.form_creator.modales.multi_item_config',['i'=>$request->input("index")]);
+    }
+    public function cajaValidacion(Request $request){
+        $index = $request->input('index');
+        return view('sistema_cobros.form_creator.components.caja_validacion', ['index' => $index]);
+    }
+    public function tipoDatoReglaValidacion(Request $request){
+        $tipo = $request->input('tipo_dato');
+        $index = $request->input('index');
+       switch ($tipo) {
+            case 'string':
+                return view('sistema_cobros.form_creator.components.validaciones.string', compact('index'));
+            
+            case 'numeric':
+            case 'integer':
+                return view('sistema_cobros.form_creator.components.validaciones.numeric', compact('index'));
+
+            case 'array':
+                return view('sistema_cobros.form_creator.components.validaciones.array', compact('index'));
+
+            case 'boolean':
+                return view('sistema_cobros.form_creator.components.validaciones.boolean', compact('index'));
+
+            case 'date':
+                return view('sistema_cobros.form_creator.components.validaciones.date', compact('index'));
+
+            case 'email':
+                return view('sistema_cobros.form_creator.components.validaciones.email', compact('index'));
+
+            case 'uuid':
+                return view('sistema_cobros.form_creator.components.validaciones.uuid', compact('index'));
+
+            case 'url':
+                return view('sistema_cobros.form_creator.components.validaciones.url', compact('index'));
+
+            case 'ip':
+                return view('sistema_cobros.form_creator.components.validaciones.ip', compact('index'));
+
+            case 'json':
+                return view('sistema_cobros.form_creator.components.validaciones.json', compact('index'));
+
+            case 'image':
+                return view('sistema_cobros.form_creator.components.validaciones.image', compact('index'));
+
+            case 'file':
+                return view('sistema_cobros.form_creator.components.validaciones.file', compact('index'));
+
+            default:
+                return ''; // O puedes retornar una vista vacía o mensaje informativo
+        }
+
     }
 
     //-----> MOSTRAR ELEMENTOS DE INFORMES

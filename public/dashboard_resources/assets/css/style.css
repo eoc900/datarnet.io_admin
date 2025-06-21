@@ -300,3 +300,7 @@ ul.mm-collapse li{
 body{
    background-color: #f4f4f4;
 }
+.tp-breadcrumb__bg{
+   background-position: center;
+   background-size: cover;
+}

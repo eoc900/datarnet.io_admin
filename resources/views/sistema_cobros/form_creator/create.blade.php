@@ -99,8 +99,8 @@
 </div>
 
 {{-- Modales --}}
-@include("sistema_cobros.form_creator.modal_definir_datos",["ruta"=>route("modal_crear_tabla")])
-@include("components.form_creator.modales.modal_multi_item")
+@include("sistema_cobros.form_creator.modales.modal_definir_datos",["ruta"=>route("modal_crear_tabla")])
+@include("sistema_cobros.form_creator.modales.modal_multi_item")
 {{-- Modales --}}
 
 

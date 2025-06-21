@@ -12,12 +12,13 @@
 
 
 <!-- CSS here -->
-<link rel="stylesheet" href="{{ asset("centro_estudios/assets/css/bootstrap.css");}}">
-<link rel="stylesheet" href="{{ asset("centro_estudios/assets/css/animate.css");}}">
-<link rel="stylesheet" href="{{ asset("centro_estudios/assets/css/slick.css");}}">
-<link rel="stylesheet" href="{{ asset("centro_estudios/assets/css/swiper-bundle.css");}}">
-<link rel="stylesheet" href="{{ asset("centro_estudios/assets/css/hover-reveal.css");}}">
-<link rel="stylesheet" href="{{ asset("centro_estudios/assets/css/magnific-popup.css");}}">
-<link rel="stylesheet" href="{{ asset("centro_estudios/assets/css/font-awesome-pro.css");}}">
-<link rel="stylesheet" href="{{ asset("centro_estudios/assets/css/spacing.css");}}">
-<link rel="stylesheet" href="{{ asset("centro_estudios/assets/css/main.css");}}">
+<link rel="stylesheet" href="{{ asset("landing/assets/css/bootstrap.css");}}">
+<link rel="stylesheet" href="{{ asset("landing/assets/css/animate.css");}}">
+<link rel="stylesheet" href="{{ asset("landing/assets/css/slick.css");}}">
+<link rel="stylesheet" href="{{ asset("landing/assets/css/swiper-bundle.css");}}">
+<link rel="stylesheet" href="{{ asset("landing/assets/css/hover-reveal.css");}}">
+<link rel="stylesheet" href="{{ asset("landing/assets/css/magnific-popup.css");}}">
+<link rel="stylesheet" href="{{ asset("landing/assets/css/font-awesome-pro.css");}}">
+<link rel="stylesheet" href="{{ asset("landing/assets/css/spacing.css");}}">
+<link rel="stylesheet" href="{{ asset("landing/assets/css/main.css");}}">
+<link rel="stylesheet" href="{{ asset("landing/assets/css/style.css");}}">

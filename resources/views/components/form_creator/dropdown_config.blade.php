@@ -21,7 +21,7 @@
      {{-- ---> datos básicos --}}
 
      {{-- ---> MODULO IMPORTANTE: para alimentar columnas a áreas de drop <---- --}}
-    <div class="col-sm-12 mt-5 seleccion-tabla">
+    <div class="col-sm-12 seleccion-tabla">
         <div class="row">
             <div class="col-sm-6">
                 <div class="input-group">
@@ -82,14 +82,18 @@
     </div>
     {{-- ---> para hacer drop de columnas --}}
 
+    {{--VALIDACIONES: Aquí se pondrá por medio de frontend las validaciones --}}
+    <div class="form-check form-switch mt-5 float-end">
+            <input class="form-check-input validacion_activada" type="checkbox" id="" name="validacion_activada[{{ $i }}]" value="true">
+            <label class="form-check-label" for="">Activar validación de campo</label>
+    </div>    
+    <div class="contenedor-validaciones" data-index="{{ $i }}"></div>{{-- Aquí hacemos append del elemento .caja-index --}}
+    {{--VALIDACIONES: Aquí se pondrá por medio de frontend las validaciones --}}
 
-    <div class="col-sm-12">
-        <button type="button" class="btn btn-outline-info previsualizar-btn mt-3">Previsualizar</button>
-    </div>
 
-    {{-- sección de previsualización --}}
-    <div class="col-sm-12 previsualizacion mt-5 border border-info rounded-pill px-5 py-4 shadow">
-
-    </div>
+    {{-- Previsualización  --}}
+    @include('components.form_creator.previsualizacion')
+    {{-- Previsualización  --}}
+   
     
 </div>

@@ -33,7 +33,7 @@
     <script>
       $(document).ready(function(){
 
-      
+      @include('sistema_cobros.form_creator.scripts.funciones.validaciones')
 
       function ajaxSeleccionInputType(){ 
           $.ajax({
@@ -49,37 +49,39 @@
       function eventoClickAgregarCampo(){
           $(".agregar-campo").off();
           $(".agregar-campo").click(function(){
+                let index = $('.configuracion-input').length;
+                console.log(index);
                 let input_segment = $(this).closest(".input-segment");
                 let input_type = input_segment.find(".input-type").val();
 
                 
                 switch(input_type){
                   case "dropdown":
-                    ajaxDropdownConfig(input_segment);
+                    ajaxDropdownConfig(input_segment,index);
                   break;
                   case "select2":
-                    ajaxSelect2Config(input_segment);
+                    ajaxSelect2Config(input_segment,index);
                   break;
                   case "radio":
-                    ajaxRadioConfig(input_segment);
+                    ajaxRadioConfig(input_segment,index);
                   break;
                   case "date":
-                    ajaxDateConfig(input_segment);
+                    ajaxDateConfig(input_segment,index);
                   break;
                   case "datetime":
-                    ajaxDatetimeConfig(input_segment);
+                    ajaxDatetimeConfig(input_segment,index);
                   break;
                   case "text":
-                    ajaxTextConfig(input_segment);
+                    ajaxTextConfig(input_segment,index);
                   break;
                   case "email":
-                    ajaxEmailConfig(input_segment);
+                    ajaxEmailConfig(input_segment,index);
                   break;
                   case "file":
-                    ajaxFileConfig(input_segment);
+                    ajaxFileConfig(input_segment,index);
                   break;
                   case "checkbox":
-                    ajaxCheckboxConfig(input_segment);
+                    ajaxCheckboxConfig(input_segment,index);
                   break;
                   case "hidden":
                     ajaxHiddenInputConfig(input_segment);
@@ -97,13 +99,11 @@
 
           });
       }
-      function ajaxDropdownConfig(inputSegment,enlaceTabla=false,subcampo=false){ 
-        console.log("ajaxDropdownConfig ejecutada: "+inputSegment);
-        console.log("subcampo: "+subcampo);
+      function ajaxDropdownConfig(inputSegment,index,enlaceTabla=false,subcampo=false,){ 
           $.ajax({
                   url: '{{ url("/ajax/formCreatorDropdownInputConfig") }}',
                   method: "post",
-                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo},
+                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo, index:index},
                   success: function(response){
                   
                     //Subcampo
@@ -132,15 +132,18 @@
                       eventoClickPrevisualizar();
                       removeConfigInput();
                     }
+
+                    // Para configuración de validación
+                    activarValidacionCheckbox();
                 
                   }
           });
       }
-      function ajaxSelect2Config(inputSegment,subcampo=false){ 
+      function ajaxSelect2Config(inputSegment,index,subcampo=false){ 
           $.ajax({
                   url: '{{ url("/ajax/formCreatorSelect2InputConfig") }}',
                   method: "post",
-                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo},
+                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo,index:index},
                   success: function(response){
 
                     if(subcampo){
@@ -161,15 +164,16 @@
                     activarDroppableTabla();
                     eventoClickPrevisualizarSelect2();
                     removeConfigInput();
-                    
+                    // Para configuración de validación
+                    activarValidacionCheckbox();
                   }
           });
       }
-      function ajaxRadioConfig(inputSegment,subcampo=false){ 
+      function ajaxRadioConfig(inputSegment,index,subcampo=false){ 
           $.ajax({
                   url: '{{ url("/ajax/formCreatorRadioConfig") }}',
                   method: "post",
-                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo},
+                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo,index:index},
                   success: function(response){
 
                     if(subcampo){
@@ -184,16 +188,17 @@
                     eventoClickAgregarRadio();
                     eventoClickPrevisualizarRadio();
                     removeConfigInput();
-                    
+                    // Para configuración de validación
+                    activarValidacionCheckbox();
 
                   }
           });
       }
-      function ajaxDateConfig(inputSegment,subcampo=false){ 
+      function ajaxDateConfig(inputSegment,index,subcampo=false){ 
           $.ajax({
                   url: '{{ url("/ajax/formCreatorDateConfig") }}',
                   method: "post",
-                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo},
+                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo,index:index},
                   success: function(response){
 
                   if(subcampo){
@@ -210,15 +215,17 @@
                     // Se selecciona una tabla de referencia en la configuración
                   eventoClickPrevisualizarDate();
                   removeConfigInput();
+                  // Para configuración de validación
+                  activarValidacionCheckbox();
                   
                   }
           });
       }
-      function ajaxDatetimeConfig(inputSegment,subcampo=false){ 
+      function ajaxDatetimeConfig(inputSegment,index,subcampo=false){ 
           $.ajax({
                   url: '{{ url("/ajax/formCreatorDatetimeConfig") }}',
                   method: "post",
-                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo},
+                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo,index:index},
                   success: function(response){
                   
                   if(subcampo){
@@ -236,15 +243,17 @@
                     // Se selecciona una tabla de referencia en la configuración
                   eventoClickPrevisualizarDatetime();
                   removeConfigInput();
+                  // Para configuración de validación
+                  activarValidacionCheckbox();
                   
                   }
           });
       }
-      function ajaxTextConfig(inputSegment,subcampo=false){ 
+      function ajaxTextConfig(inputSegment,index,subcampo=false){ 
           $.ajax({
                   url: '{{ url("/ajax/formCreatorTextConfig") }}',
                   method: "post",
-                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo},
+                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo,index:index},
                   success: function(response){
                       
                     if(subcampo){
@@ -259,16 +268,18 @@
                     $("body").find(".configuracion-input").eq(index-1).find(".input-text").attr("name","inputs["+(index-1)+"][placeholder]");
                     eventoClickPrevisualizarText();
                     removeConfigInput();
+                    // Para configuración de validación
+                    activarValidacionCheckbox();
                     
 
                   }
           });
       }
-      function ajaxEmailConfig(inputSegment,subcampo=false){ 
+      function ajaxEmailConfig(inputSegment,index,subcampo=false){ 
           $.ajax({
                   url: '{{ url("/ajax/formCreatorEmailConfig") }}',
                   method: "post",
-                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo},
+                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo,index:index},
                   success: function(response){
                     if(subcampo){
                       $('#contenido-subcampo').html('');
@@ -282,17 +293,19 @@
                     $("body").find(".configuracion-input").eq(index-1).find(".input-text").attr("name","inputs["+(index-1)+"][placeholder]");
                     eventoClickPrevisualizarEmail();
                     removeConfigInput();
+                    // Para configuración de validación
+                    activarValidacionCheckbox();
                     
 
                     
                   }
           });
       }
-      function ajaxFileConfig(inputSegment,subcampo=false){ 
+      function ajaxFileConfig(inputSegment,index,subcampo=false){ 
           $.ajax({
                   url: '{{ url("/ajax/formCreatorFileConfig") }}',
                   method: "post",
-                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo},
+                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo,index:index},
                   success: function(response){
                     if(subcampo){
                       $('#contenido-subcampo').html('');
@@ -308,16 +321,18 @@
                     $("body").find(".configuracion-input").eq(index-1).find(".file_size").attr("name","inputs["+(index-1)+"][file_size]");
                     eventoClickPrevisualizarFile();
                     removeConfigInput();
+                    // Para configuración de validación
+                    activarValidacionCheckbox();
                     
                   
                   }
           });
       }
-      function ajaxCheckboxConfig(inputSegment,subcampo=false){ 
+      function ajaxCheckboxConfig(inputSegment,index,subcampo=false){ 
           $.ajax({
                   url: '{{ url("/ajax/formCreatorCheckboxConfig") }}',
                   method: "post",
-                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo},
+                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo,index:index},
                   success: function(response){
 
                     if(subcampo){
@@ -342,6 +357,8 @@
                     eventoEnlazarCheckbox();
                     select2TablaModuloEnlazarCheckbox(select2);
                     removeConfigInput();
+                    // Para configuración de validación
+                    activarValidacionCheckbox();
                     
 
                   }
@@ -383,7 +400,9 @@
                         segment.append(response);
                         removeConfigInput();
                         eventoClickAgregarSubCampo();
-                        // Se selecciona una tabla de referencia en la configuración                                                            
+                        // Se selecciona una tabla de referencia en la configuración     
+                        // Para configuración de validación
+                                                                       
                   }
           });
       }
@@ -392,6 +411,7 @@
         $('.agregar-subcampo').on('click', function () {
             const indexPadre = $(this).data('index'); // i
             const inputSegment = $(this).closest('.configuracion-input'); // contenedor general
+            const index = inputSegment.index('.contenedor_campos .configuracion-input');
             const input_type = inputSegment.find('.opciones-subcampo').val();
             console.log(input_type);
 
@@ -401,31 +421,31 @@
             // Renderizar la configuración del campo hijo dentro del modal
             switch (input_type) {
                 case "dropdown":
-                    ajaxDropdownConfig('#contenido-subcampo',false,true);
+                    ajaxDropdownConfig('#contenido-subcampo',index,false,true);
                     break;
                 case "select2":
-                    ajaxSelect2Config('#contenido-subcampo',true);
+                    ajaxSelect2Config('#contenido-subcampo',index,true);
                     break;
                 case "radio":
-                    ajaxRadioConfig('#contenido-subcampo',true);
+                    ajaxRadioConfig('#contenido-subcampo',index,true);
                     break;
                 case "date":
-                    ajaxDateConfig('#contenido-subcampo',true);
+                    ajaxDateConfig('#contenido-subcampo',index,true);
                     break;
                 case "datetime":
-                    ajaxDatetimeConfig('#contenido-subcampo',true);
+                    ajaxDatetimeConfig('#contenido-subcampo',index,true);
                     break;
                 case "text":
-                    ajaxTextConfig('#contenido-subcampo',true);
+                    ajaxTextConfig('#contenido-subcampo',index,true);
                     break;
                 case "email":
-                    ajaxEmailConfig('#contenido-subcampo',true);
+                    ajaxEmailConfig('#contenido-subcampo',index,true);
                     break;
                 case "file":
-                    ajaxFileConfig('#contenido-subcampo',true);
+                    ajaxFileConfig('#contenido-subcampo',index,true);
                     break;
                 case "checkbox":
-                    ajaxCheckboxConfig('#contenido-subcampo',true);
+                    ajaxCheckboxConfig('#contenido-subcampo',index,true);
                     break;
                 case "hidden":
                     ajaxHiddenInputConfig('#contenido-subcampo',true);
