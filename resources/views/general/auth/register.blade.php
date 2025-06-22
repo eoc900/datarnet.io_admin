@@ -5,8 +5,8 @@
            <div class="col-12 mt-3 col-md-8 col-lg-6 col-xl-5 col-xxl-5 mx-auto">
             <div class="card rounded-4 mb-0 border-top border-4 border-primary border-gradient-1">
               <div class="card-body p-5">
-                  <img src="{{ asset('dashboard_resources/assets/images/auth/register-banner-students.jpg') }}" class="mb-4 banner-register" width="145" alt="">
-                  <h4 class="fw-bold text-center">Bienvenido</h4>
+                  <img src="{{ asset('dashboard_resources/assets/branding/banner-registro-proyecto-inteligente.jpg') }}" class="mb-4 banner-register" width="145" alt="">
+                  <h4 class="fw-bold text-center">Registro rápido</h4>
                   <p class="mb-0 text-center">Por favor ingresa tus datos para generar tu cuenta.</p>
                 <form method="POST" class="row g-3" action="{{ route('register') }}">
                     @csrf
@@ -66,31 +66,17 @@
 												</div>
 											</div>
 										</form>
-									</div>
-
-                  <div class="separator section-padding">
-                    <div class="line"></div>
-                    <p class="mb-0 fw-bold">OR</p>
-                    <div class="line"></div>
-                  </div>
-
-                  <div class="d-flex gap-3 justify-content-center mt-4">
-                    <a href="javascript:;" class="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-grd-danger">
-                      <i class="bi bi-google fs-5 text-white"></i>
-                    </a>
-                    <a href="javascript:;" class="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-grd-deep-blue">
-                      <i class="bi bi-facebook fs-5 text-white"></i>
-                    </a>
-                    <a href="javascript:;" class="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-grd-info">
-                      <i class="bi bi-linkedin fs-5 text-white"></i>
-                    </a>
-                    <a href="javascript:;" class="wh-42 d-flex align-items-center justify-content-center rounded-circle bg-grd-royal">
-                      <i class="bi bi-github fs-5 text-white"></i>
-                    </a>
-                  </div>
+									</div>                  
 
               </div>
             </div>
            </div>
         </div>
-  
+		<a href="https://wa.me/5211234567890" 
+			class="whatsapp-button" 
+			target="_blank" 
+			title="Chatea con nosotros por WhatsApp">
+				<img src="https://cdn-icons-png.flaticon.com/512/124/124034.png" alt="WhatsApp" />
+			</a>
+
+

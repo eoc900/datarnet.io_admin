@@ -3,6 +3,7 @@
         $columnas = array_keys((array) $registros[0]);
     @endphp
 
+<div class="col-md-{{ $col }}">
     @if(count($columnas) === 2)
         <div class="row">
             @foreach($registros as $fila)
@@ -37,6 +38,7 @@
             <em>{{ implode(', ', $columnas) }}</em>
         </div>
     @endif
+    </div>
 @else
     <div class="alert alert-info">
         No hay resultados para mostrar.

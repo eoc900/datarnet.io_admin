@@ -1,5 +1,7 @@
 @if(!empty($registros) && count($registros) > 0)
-    <div class="table-responsive">
+
+<div class="col-md-{{ $seccion["col"]  }}">
+    <div class="table-responsive scroll-x">
         <table class="table table-striped table-bordered">
             <thead class="table-dark">
                 <tr>
@@ -19,6 +21,7 @@
             </tbody>
         </table>
     </div>
+</div>
 @else
     <div class="alert alert-info">
         No hay resultados para mostrar.

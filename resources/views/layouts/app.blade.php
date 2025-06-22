@@ -12,7 +12,8 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 
     </head>
     <body class="font-sans antialiased">
@@ -27,9 +28,15 @@
                     </div>
                 </header>
             @endisset
+            
 
             <!-- Page Content -->
             <main>
+                <div class="bg-blue-500 text-white p-4 rounded">
+                    Tailwind está funcionando
+                    </div>
+                    <h2>hola</h2>
+
                 {{ $slot }}
             </main>
         </div>

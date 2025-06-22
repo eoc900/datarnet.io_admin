@@ -3,54 +3,21 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FormsController;
 use App\Http\Controllers\TablasController;
-use App\Http\Controllers\EscuelasController;
 use App\Http\Controllers\SistemasAcademicosController;
 use App\Http\Controllers\ConceptosCobrosController;
 use App\Http\Controllers\CostoConceptoController;
-use App\Http\Controllers\AlumnosController;
 use App\Http\Controllers\AjaxHtmlController;
 use App\Http\Controllers\AjaxAddMultipleInputsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\PermisosController;
 
-use App\Http\Controllers\CuentasController;
-use App\Http\Controllers\CobrosController;
-use App\Http\Controllers\CargosController;
-use App\Http\Controllers\CategoriaCobroController;
-
 use App\Http\Controllers\UsuariosController;
-use App\Http\Controllers\MaestrosController;
 use App\Http\Controllers\DashboardsController;
-use App\Http\Controllers\CalendarioController;
-use App\Http\Controllers\TareasController;
-use App\Http\Controllers\TituloAcademMaestroController;
 use App\Http\Controllers\DocumentoController;
-use App\Http\Controllers\PagosController;
-use App\Http\Controllers\DescuentosController;
-use App\Http\Controllers\PromocionesController;
-use App\Http\Controllers\PromocionesAplicadasController;
-use App\Http\Controllers\TiposCorreosAlumnosController;
-use App\Http\Controllers\TiposContactosController;
-use App\Http\Controllers\ContactosAlumnosController;
-use App\Http\Controllers\TiposCorreosContactosAlumnosController;
-use App\Http\Controllers\CorreosAsociadosController;
-use App\Http\Controllers\InscripcionesController;
-use App\Http\Controllers\MateriasController;
-use App\Http\Controllers\InvitacionesUsuariosController;
-use App\Http\Controllers\CargaMateriasController;
 use App\Http\Controllers\FileExcelCsvReadController;
-use App\Http\Controllers\TiposCorreosMaestrosController;
-use App\Http\Controllers\HorariosMaestrosController;
-use App\Http\Controllers\CargasArchivosController;
-use App\Http\Controllers\DirectoriosRootController;
-use App\Http\Controllers\CarpetasUsuariosController;
-use App\Http\Controllers\SalonesController;
-use App\Http\Controllers\CurriculasController;
-use App\Http\Controllers\MateriasRegistradasAlumnosController;
 use App\Http\Controllers\TablasModulosController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\SQLCreatorController;
-use App\Http\Controllers\CertificadosController;
 use App\Http\Controllers\ArchivosController;
 use App\Http\Controllers\FormCreatorController;
 use App\Http\Controllers\TitulosGeneradosController;
@@ -63,10 +30,7 @@ use App\Http\Controllers\MailGunController;
 use App\Http\Controllers\ProyectosController;
 
 use App\Http\Controllers\LandingPageController;
-use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PdfController;
-
-use App\Http\Controllers\TiposDocumentosController;
 use App\Http\Controllers\Select2Controller;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\TestsController;
@@ -75,14 +39,10 @@ use Illuminate\Support\Facades\Route;
 
 //Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/webhooks/mailgun',[MailGunController::class,'storage']);
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 
-
-
-Route::get('/RegisterMasterUser',[UsuariosController::class,'registerMasterView']); 
-Route::post('/usuarios/registerMain',[UsuariosController::class,'receiveMaster']);
-
-Route::get('/',[LandingPageController::class,'index']);
-Route::resource('/blog', BlogController::class);
 
 Route::get('/dashboard_inicio', [DashboardsController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -120,23 +80,7 @@ Route::middleware(['auth','verified'])->group(function () {
      Route::get('/test_email',[EmailController::class,"testView"]);
      Route::post('/emails/sendEmail',[EmailController::class,"testSend"]);
 
-    Route::get("/calendario",[CalendarioController::class,'index']);
-    Route::resource('/tareas',TareasController::class);
-    Route::resource('/maestros', MaestrosController::class);
-    
-    Route::resource('/documentos',DocumentoController::class);
-    Route::resource('/tipos_documentos',TiposDocumentosController::class);
 
-    //-------> Para sistema de cobros
-    Route::post('/alta/rol_permisos',[FormsController::class,'store'])->name('insert.rol_permisos');
-    Route::post('/alta/rol_usuario',[FormsController::class,'store'])->name('insert.rol_usuario');
-    Route::post('/alta/categoria_cobros',[FormsController::class,'store'])->name('insert.categoria_cobros');
-
-    Route::get('/tabla/{nombre?}',[TablasController::class,'index'])->name('tabla');
-    Route::post("/select2/conceptos",[Select2Controller::class,'conceptos_cobros']);
-    Route::post("/select2/alumnos",[Select2Controller::class,'alumnos_con_sistema']);
-    Route::post("/select2/costos_conceptos",[Select2Controller::class,'costos_conceptos']);
-    Route::post("/select2/cuentas_alumno",[Select2Controller::class,'cuentas_alumno']);
     Route::post("/select2/usuarios_roles",[Select2Controller::class,'usuariosYRoles']);
     Route::post("/select2/usuarios",[Select2Controller::class,'usuarios']);
     Route::post('/select2/descuentos',[Select2Controller::class,'dropdownDescuentos']);
@@ -147,40 +91,10 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/select2/formularios',[Select2Controller::class,'formularios']);
     
 
-    
-   
-    Route::resource('/sistemas_academicos',SistemasAcademicosController::class);
-    Route::resource('/alumnos',AlumnosController::class);
-    Route::resource('/carga_materias',CargaMateriasController::class);
-    Route::resource('/concepto_cobro',ConceptosCobrosController::class);
-    Route::resource('/costo_concepto',CostoConceptoController::class);
-    Route::resource('/correos_asociados',CorreosAsociadosController::class);
-    Route::resource('/cuentas',CuentasController::class);
-    Route::resource('/cobros',CobrosController::class);
+
     Route::resource('/roles',RolesController::class);
     Route::resource('/permisos',PermisosController::class);
     Route::resource('/users',UsuariosController::class);
-    Route::resource('/categoria_cobros',CategoriaCobroController::class);
-    Route::resource('/pagos_realizados',PagosController::class);
-    Route::resource('/pagos_pendientes',CargosController::class);
-    Route::resource('/tipos_correos',TiposCorreosAlumnosController::class);
-    Route::resource('/tipos_contactos',TiposContactosController::class);
-    Route::resource('/descuentos',DescuentosController::class);
-    Route::resource('/promociones',PromocionesController::class);
-    Route::resource('/promociones_aplicadas',PromocionesAplicadasController::class);
-    Route::resource('/contactos_alumnos',ContactosAlumnosController::class);
-    Route::resource('/tipos_correos_contactos',TiposCorreosContactosAlumnosController::class);
-    Route::resource('/inscripciones',InscripcionesController::class);
-    Route::resource('/materias',MateriasController::class);
-    Route::resource('/invitaciones_usuarios',InvitacionesUsuariosController::class);
-    Route::resource('/tipos_correos_maestros',TiposCorreosMaestrosController::class);
-    Route::resource('/horarios_maestros',HorariosMaestrosController::class);
-    Route::resource('/archivos',CargasArchivosController::class);
-    Route::resource('/directorios_root',DirectoriosRootController::class);
-    Route::resource('/carpetas_usuarios',CarpetasUsuariosController::class);
-    Route::resource('/salones',SalonesController::class);
-    Route::resource('/curriculas',CurriculasController::class);
-    Route::resource('/materias_registradas_alumnos',MateriasRegistradasAlumnosController::class);
     Route::resource('/tablas_modulos',TablasModulosController::class);
     Route::resource('/reportes',ReportesController::class);
     Route::resource('/sql_creator',SQLCreatorController::class);
@@ -190,17 +104,6 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::resource('/titulos_generados',TitulosGeneradosController::class);
     Route::resource('/ligas_formulario',LigasFormulariosController::class);
     Route::resource('/informes',InformesController::class);
-
-
-    // ----> Relación materias y maestros, y horario
-    Route::get('/maestros_materias/definir_materias/{maestro?}',[MaestrosController::class,"materiasQuePuedeDar"])->name("maestros_materias.definir_materias");
-    Route::post('/maestros_materias/guardar_materias_definidas',[MaestrosController::class,"guardarMateriasDefinidas"])->name("maestros_materias.guardar_materias_definidas");
-
-    // ----> Asociar materias a sistemas academicos
-    Route::get('/curricula_sistema/definir_materias/{id_sistema?}',[CurriculasController::class,"asociarMaterias"])->name("curricula_sistema.definir_materias");
-
-    // ----> Asociar o registrar materias al alumno; aunque se haya inscrito a un sistema las materias pueden revalidarse
-    Route::get('/curricula_alumnos/definir_materias/{id_alumno?}',[MateriasRegistradasAlumnosController::class,'definirRegistroMaterias'])->name('definir_materias_alumno');
 
 
     // ---->Sistema cobros: Ajax html
@@ -259,15 +162,7 @@ Route::middleware(['auth','verified'])->group(function () {
 
     Route::post('/eliminar/rol',[UsuariosController::class,'removeRol']);
 
-    // Cuentas del alumno
-    Route::get('/download/info',[PdfController::class,'downloadInfo']);
-    Route::get('/ver',[PdfController::class,'verPDF']);   
-    Route::get('/ver_cuenta/{id_cuenta?}',[PdfController::class,'vistaGenerarCuenta']);   
-    Route::post('/download/cuenta',[PdfController::class,'downloadCuenta']);   
-    Route::post('/aplicar_descuento/store',[DescuentosController::class,'storeAplicarDescuento'])->name('aplicar_descuento.store');
-    Route::get('/aplicar_descuento/create',[DescuentosController::class,'aplicarDescuentoVista'])->name('aplicar_descuento.create');
-    Route::post('/download/envio_cuenta',[PdfController::class,'enviarCuentaCorreo']);
-    Route::get('/post_create/alumnos/{id?}',[AlumnosController::class,'postCreate'])->name('post_create.alumnos');
+ 
     
     // Correos personalizados
     Route::post('/enviar_bienvenida',[EmailController::class,'bienvenida']);
@@ -284,22 +179,9 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::get('/contenido/{archivo}', [TablasModulosController::class, 'testDocument']);
     Route::get('/descargar_tabla/{id_tabla}', [TablasModulosController::class, 'descargarCSV'])->name('descargar_tabla');
 
-    // Gantt
-    Route::get('/gantt',[ProyectosController::class,'gantt']);
-
-    // Disponibilidad horarios
-    Route::get('/buscar_disponibilidad',[HorariosMaestrosController::class,'buscarMaestro'])->name("disponibilidad.maestro");
-    Route::get('/disponibilidad/{maestro?}',[HorariosMaestrosController::class,'disponibilidad']);
-    Route::post('/asignar_horario_disponible',[HorariosMaestrosController::class,'storeDisponibilidad'])->name("asignar_disponibilidad");
-    Route::post('/eliminar_horario_disponible',[HorariosMaestrosController::class,'eliminarHoraDisponible'])->name("eliminar_hora_disponible");
 
 
     // Carga de archivos
-    Route::post('/listar_directorios',[DirectoriosRootController::class,'getDirectorios']);
-    Route::get('/cargar_archivo',[CargasArchivosController::class,'cargarDocumentos']);
-    Route::post('/cargar',[CargasArchivosController::class,'cargar'])->name("cargar");
-    Route::get('/directorios',[DirectoriosRootController::class,'verTodos']);
-    Route::get('/ver_contenido/{id_directorio?}/{ruta?}',[CarpetasUsuariosController::class,'verContenido'])->name('ver_contenido')->where('ruta', '.*');
     Route::get('/descargar_archivo/{id}',[ArchivosController::class,"descargar"])->name("descargar_archivo");
     Route::get('/descargar_configuracion/{tipo}/{nombreArchivo}',[ArchivosController::class,"descargarConfiguracion"])->name("descargar.configuracion");
     // Edición de archivos
@@ -319,19 +201,6 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/autoguardado/creador_informes',[InformesController::class,'autoguardadoParcial'])->name("autoguardado_seccion.creador_informe");
 
 
-    // Generación y pruebas de certificados
-    Route::get("/reformular_xmls",[TitulosGeneradosController::class,"reformularTitulosParaXML"]);
-    Route::get("/ejemplo_certificados",[CertificadosController::class,"ejemploCertificados"]);
-    Route::get("/prueba_soap_xml/{id}",[TitulosGeneradosController::class,"pruebaSOAPXml"])->name("prueba_soap");
-    Route::get("/consultar_lote/{id_titulo}",[TitulosGeneradosController::class,"consultarLote"])->name("consultar_lote");
-    Route::get("/descargar_lote/{id_titulo}",[TitulosGeneradosController::class,"descargarLote"])->name("descargar_lote");
-    Route::get("/ver_xml/{id_titulo}",[TitulosGeneradosController::class,"verXml"])->name("ver_xml");
-    Route::post("/generar_titulo",[TitulosGeneradosController::class,"actionGenerarTitulo"])->name("generar_titulo");
-    Route::post("/generar_zip",[TitulosGeneradosController::class,"generarZipDocumentos"])->name("generar_zip");
-
-
-    // Probar conexión wsdl
-    Route::get("/probar_conexion",[TitulosGeneradosController::class,"probarConexion"]);
 
     // Creador de formularios FormCreator
     Route::get('/generar_qr/{id_liga?}',[FormCreatorController::class,"generarQR"])->name("generar.qr");
@@ -348,7 +217,6 @@ Route::middleware(['auth','verified'])->group(function () {
 });
 
 Route::get('/not-found',[App\Http\Controllers\CommonsController::class, 'notFound'])->name("not_found");
-
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->middleware('verified');
 
 
