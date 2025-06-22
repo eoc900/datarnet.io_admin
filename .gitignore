@@ -1,13 +1,20 @@
-/node_modules
-/vendor
+# Dependencias de Node y Composer
+/node_modules/
+/vendor/
+
+# Archivos de entorno y configuración local
 .env
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
 auth.json
+
+# Logs
 npm-debug.log
 yarn-error.log
-/.fleet
-/.idea
-/.vscode
+
+# Configuraciones de IDEs
+.fleet/
+.idea/
+.vscode/
