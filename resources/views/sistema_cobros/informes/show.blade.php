@@ -2,7 +2,7 @@
 @section("content")
 @include('components.sistema_cobros.response')
 
-
+@if(auth::user()->can($permiso) || auth::user()->hasRole(["Administrador tecnológico","Owner"]))
 <div class="card">
     <div class="card-header pt-3">
         <h5>{{ $titulo ?? '' }}</h5>
@@ -55,7 +55,14 @@
 
      </div>
 </div>
+@else
 
+    <div class="alert alert-warning">
+        <p>Lo sentimos no tienes acceso para visualizar este informe</p>
+    </div>
+
+
+@endif
 
 
 

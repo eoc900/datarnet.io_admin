@@ -15,6 +15,6 @@ class CustomVerifyEmail extends BaseVerifyEmail
             ->line('Por favor, haz clic en el botón de abajo para verificar tu dirección de correo electrónico.')
             ->action('Verificar Dirección de Correo Electrónico', $verificationUrl)
             ->line('Si no creaste una cuenta, no se requiere ninguna otra acción.')
-            ->salutation('Saludos, equipo Centro de Estudios.');
+            ->salutation('Saludos, equipo '.env('APP_NAME').'.');
     }
 }

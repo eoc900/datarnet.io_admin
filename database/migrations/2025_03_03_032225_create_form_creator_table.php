@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid("id")->primary();
             $table->string("titulo",64);
             $table->string("hidden_identifier",64)->nullable(); //sin espacios
+            $table->string('permiso_requerido')->nullable(); // clave del permiso Spatie
             $table->string("descripcion");
             $table->string("action",64);
             $table->string("nombre_documento",64);

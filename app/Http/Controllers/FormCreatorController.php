@@ -13,12 +13,10 @@ use App\Models\TablaModulo;
 use App\Helpers\TablasModulos;
 use App\Models\ColumnaTabla;
 use Illuminate\Support\Facades\Schema;
-use App\Helpers\EjemploCertificado;
-use App\Services\SoapService;
-use App\Models\TituloGenerado;
-use App\Helpers\GenerarTitulo;
 use App\Models\LigaFormulario;
 use Illuminate\Support\Carbon;
+use Spatie\Permission\Models\Permission;
+use App\Models\User;
 
 
 
@@ -120,6 +118,25 @@ class FormCreatorController extends Controller
             }
         }
 
+        // Usuarios permitidos
+        $usuarios = $request->input('usuarios_permitidos', []);
+         // Crear permiso único
+        $tipo = $request->input('crear'); // 'formulario' o 'informe'
+        $nombre = $request->input('nombre_formulario');
+
+        $permiso = '';
+        if(!empty($usuarios)){
+            $permiso = 'ver ' . $tipo . ' ' . Str::slug($nombre, ' ');
+            Permission::firstOrCreate(['name' => $permiso]);
+            // Asignar el permiso a los usuarios seleccionados
+            foreach ($usuarios as $idUsuario) {
+                $usuario = User::find($idUsuario);
+                if ($usuario) {
+                    $usuario->givePermissionTo($permiso);
+                }
+            }
+        }
+        
 
 
         $nombre_documento_limpio = Str::slug($request->nombre_documento, '_');
@@ -140,6 +157,7 @@ class FormCreatorController extends Controller
         $form->id = $id;
         $form->titulo = $titulo_formulario;
         $form->hidden_identifier = $hidden_identifier;
+        $form->permiso_requerido = $permiso;
         $form->descripcion = $descripcion;
         $form->action = $action;
         $form->nombre_documento = $nombre_documento_limpio;
@@ -164,7 +182,8 @@ class FormCreatorController extends Controller
             "tabla"=>$request->id_tabla_db ?? "modulo_".$nombre_documento_limpio,
             "creadoPor"=>$form->creadoPor,
             "inputs"=>$inputs,
-            "ruta_banner"=>$ruta ?? null
+            "ruta_banner"=>$ruta ?? null,
+            "permiso"=>$permiso
         ];
             
 
@@ -237,6 +256,7 @@ class FormCreatorController extends Controller
         $jsonDecoded = json_decode($data, true);
         $jsonDecoded["title"] = "Lectura formulario";
         $jsonDecoded["nombre_documento"] = $Form->nombre_documento;
+
 
         
         foreach($jsonDecoded["inputs"] as $index=>$input){

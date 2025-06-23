@@ -9,14 +9,22 @@
     </div>
     <form method="post" action="{{ route('informes.store') }}" enctype="multipart/form-data" id="creadorInforme">
 	@csrf
+    <input type="hidden" name="crear" value="informe">
     {{-- Contenedor de autoguardado --}}
     <div id="seccion-auto-guardado">  
         <div class="card">
             <div class="card-body">
-                <label for="" class="form-label">Nombre del informe</label>
-                <input type="text" class="form-control mb-4" value="{{ $estructura['titulo']??'' }}" name="nombre_informe">
-                <label for="" class="form-label">Descripción</label>
-                <textarea name="descripcion_informe" class="form-control mb-4" id="" cols="30" rows="5" placeholder="Describe que quieres mostrar">{{ $estructura['descripcion']??'' }}</textarea>
+                <div class="row">
+                    <div class="col-md-6">
+                            <label for="" class="form-label">Nombre del informe</label>
+                            <input type="text" class="form-control mb-4" value="{{ $estructura['titulo']??'' }}" name="nombre_informe">
+                            <label for="" class="form-label">Descripción</label>
+                            <textarea name="descripcion_informe" class="form-control mb-4" id="" cols="30" rows="5" placeholder="Describe que quieres mostrar">{{ $estructura['descripcion']??'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                            @include('components.informes.usuarios_checkbox')
+                    </div>
+                </div>                          
                 <input type="hidden" value="{{ $estructura['clave']??'' }}" name="clave">
                 
 

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nombre',64);
             $table->string('descripcion');
             $table->string('identificador',16);
+            $table->string('permiso_requerido')->nullable(); // clave del permiso Spatie
             $table->foreignUuid('creado_por');
             $table->boolean('activo')->default(1);
             $table->timestamps();

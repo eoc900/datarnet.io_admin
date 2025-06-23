@@ -80,7 +80,7 @@ class UsuariosController extends Controller
                             "routeCreate" => 'users.create',
                             "routeEdit" => 'users.edit',
                             "routeShow" => 'users.show',
-                            "routeIndex" => 'tabla',
+                            "routeIndex" => 'users.index',
                             "ajaxRenderRoute" => '/html/tabletareas',
                             "reRenderSection" => ".dynamic_table",
                             "searchFor"=>$searchFor,

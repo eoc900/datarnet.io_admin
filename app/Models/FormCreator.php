@@ -11,6 +11,7 @@ class FormCreator extends Model
         "id",
         "titulo",
         "hidden_identifier",
+        "permiso_requerido",
         "descripcion",
         "action",
         "nombre_documento",

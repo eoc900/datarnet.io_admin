@@ -10,8 +10,8 @@
 <div class="card-body">
     <form class="row" method="post" action="{{ route('form_creator.store') }}" enctype="multipart/form-data" id="guardar_formulario">
         @csrf
-        <x-lista-mensajes/>
-        <div class="col-sm-4 py-3 ps-5 ">
+        <input type="hidden" name="crear" value="formulario">
+        <div class="col-md-4 py-3 ps-5 ">
                 <label for="" class="text-primary"><i class="lni lni-skipping-rope"></i> Enlazar formulario a una tabla</label>
                 <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="enlazarTabla" name="enlazar_tabla" value="true">
@@ -23,12 +23,15 @@
                         <label class="form-check-label" for="publico">Publico</label>
                 </div>                
         </div>
-        <div class="col-4">
+        <div class="col-md-4">
                 <label for="" class="text-primary mt-3"><i class="lni lni-key"></i> Habilitar opciones avanzadas</label>
                 <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="conf_avanzada" name="conf_avanzada" value="true">
                         <label class="form-check-label" for="conf_avanzada">Configuración avanzada</label>
                 </div>
+        </div>
+        <div class="col-md-4">
+                @include('components.informes.usuarios_checkbox')
         </div>
         <div class="col-sm-12 py-3 contenedor_enlazar_tabla d-none">
                 <div class="tabla_enlazada">

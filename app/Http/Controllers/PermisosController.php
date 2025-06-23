@@ -61,7 +61,7 @@ class PermisosController extends Controller
                             "routeCreate" => 'permisos.create',
                             "routeEdit" => 'permisos.edit',
                             "routeShow" => 'permisos.show',
-                            "routeIndex" => 'tabla',
+                            "routeIndex" => 'permisos.index',
                             "ajaxRenderRoute" => '/html/tabletareas',
                             "reRenderSection" => ".dynamic_table",
                             "searchFor"=>$searchFor,

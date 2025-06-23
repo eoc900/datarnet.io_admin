@@ -13,6 +13,8 @@ use App\Models\Informe;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Spatie\Permission\Models\Permission;
+use App\Models\User;
 
 class InformesController extends Controller
 {
@@ -158,12 +160,32 @@ class InformesController extends Controller
         $filtros = [];
         $secciones = [];
 
+        // Usuarios permitidos
+        $usuarios = $request->input('usuarios_permitidos', []);
+        // Crear permiso único
+        $tipo = $request->input('crear'); // 'formulario' o 'informe'
+        $nombre = $request->input('nombre_informe');
+        $permiso = '';
+        if(!empty($usuarios)){
+            $permiso = 'ver ' . $tipo . ' ' . Str::slug($nombre, ' ');
+            Permission::firstOrCreate(['name' => $permiso]);
+            // Asignar el permiso a los usuarios seleccionados
+            foreach ($usuarios as $idUsuario) {
+                $usuario = User::find($idUsuario);
+                if ($usuario) {
+                    $usuario->givePermissionTo($permiso);
+                }
+            }
+        }
+        
+
         $filtros = $this->almacenarFiltros($request);
         
         $resultados["nombre_informe"] = $request->input("nombre_informe");
         $resultados["descripcion_informe"] = $request->input("descripcion_informe");
         $resultados["clave_informe"] = $request->input("clave");
         $resultados["filtros"] = $filtros;
+        $resultados["permiso"] = $permiso;
         
         // Obtención de secciones ubicadas en el archivo config_temp.json
         $path = "informes/tmp/config_temp.json";
@@ -175,6 +197,7 @@ class InformesController extends Controller
             $informe = new Informe();
             $informe->nombre = $resultados["nombre_informe"];
             $informe->identificador = $resultados["clave_informe"];
+            $informe->permiso_requerido = $permiso;
             $informe->descripcion = $resultados["descripcion_informe"];
             $informe->creado_por = Auth::user()->id;
             $informe->save();
@@ -504,7 +527,7 @@ class InformesController extends Controller
                 return back()->with('error', 'No se encontró el informe a actualizar.');
             }
             $informe->nombre = $resultados["nombre_informe"];
-            $informe->descripcion = $resultados["descripcion_informe"];
+            $informe->descripcion = $resultados["descripcion_informe"];            
             $informe->creado_por = Auth::user()->id;
             $informe->save();
             //2. Guardar filtros

@@ -11,6 +11,7 @@ class Informe extends Model
             "nombre",
             "descripcion",
             "identificador",
+            "permiso_requerido",
             "creado_por",
             "activo"
         ];

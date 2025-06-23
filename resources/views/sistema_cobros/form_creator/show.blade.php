@@ -1,6 +1,8 @@
 @extends('sistema_cobros.form_creator.layouts.show')
 @section("content")
  
+@if(auth::user()->can($permiso) || auth::user()->hasRole(["Administrador tecnológico","Owner"]))
+    
 
 @include('components.sistema_cobros.response')
 <a href="{{ route('form_creator.index') }}" class="btn btn-primary my-5">Regresar al listado de formularios</a>
@@ -90,6 +92,12 @@
         </form>
     </div>
 </div>
+@else
+
+    <div class="alert alert-warning">
+        <p>Lo sentimos no tienes acceso para visualizar este formulario</p>
+    </div>
+@endif
 @endsection
 
 {{-- MULTI ITEM --}}

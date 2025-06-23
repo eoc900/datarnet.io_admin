@@ -70,7 +70,7 @@ class RolesController extends Controller
                             "routeCreate" => 'roles.create',
                             "routeEdit" => 'roles.edit',
                             "routeShow" => 'roles.show',
-                            "routeIndex" => 'tabla',
+                            "routeIndex" => 'roles.index',
                             "ajaxRenderRoute" => '/html/tabletareas',
                             "reRenderSection" => ".dynamic_table",
                             "searchFor"=>$searchFor,
@@ -168,7 +168,7 @@ class RolesController extends Controller
         $role->syncPermissions($nombresPermisos);
         $role->save();
 
-        return redirect()->route('tabla','roles')->with('success', 'El rol ha sido actualizado correctamente.');
+        return redirect()->route('roles.index')->with('success', 'El rol ha sido actualizado correctamente.');
     }
 
     /**
