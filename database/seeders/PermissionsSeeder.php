@@ -26,7 +26,8 @@ class PermissionsSeeder extends Seeder
             'Ver ligas',
             'Borrar formularios',
             'Eliminar tablas modulos',
-            'Eliminar informes'          
+            'Eliminar informes',
+            'Eliminar archivos'          
         ];
 
         foreach ($permissions as $name) {

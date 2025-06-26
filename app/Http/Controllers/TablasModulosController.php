@@ -239,24 +239,30 @@ class TablasModulosController extends Controller
 
 
         foreach ($columnas as $index => $columna) {
-           ColumnaTabla::create([
+                ColumnaTabla::create([
                     'nombre_columna' => $columna,
                     'id_tabla' => $id_tabla,
                     'tipo_dato' => $tipos[$index] ?? "varchar",
                     'qty_caracteres' => $request->input("limite_caracteres")[$index] ?? 255,
-                    'es_llave_primaria' => isset($primaryKeys[$index]),
-                    'nullable' => ($nullables[$index] ?? null) === "true",
-                    'es_foranea' => isset($es_foranea[$index]),
-                    'on_table' => isset($es_foranea[$index]) ? ($on_table[$index] ?? null) : null,
-                    'on_column' => isset($es_foranea[$index]) ? (str_contains($on_row[$index], '.') ? explode('.', $on_row[$index])[1] : $on_row[$index]) : null,
+
+                    // Ya no necesitas isset, solo haces una comparación directa:
+                    'es_llave_primaria' => $primaryKeys[$index] ?? 0,
+                    'nullable' => $nullables[$index] ?? 0,
+                    'es_foranea' => $es_foranea[$index] ?? 0,
+
+                    'on_table' => ($es_foranea[$index] ?? 0) ? ($on_table[$index] ?? null) : null,
+                    'on_column' => ($es_foranea[$index] ?? 0)
+                        ? (str_contains($on_row[$index], '.') ? explode('.', $on_row[$index])[1] : $on_row[$index])
+                        : null,
+
                     'activo' => true,
                 ]);
 
-                $assoc_nullables[$columna] = ($nullables[$index] ?? null) === "true";
+                $assoc_nullables[$columna] = $nullables[$index] ?? 0;
                 $assoc_limite[$columna] = $request->input("limite_caracteres")[$index] ?? 255;
-                $assoc_unicos[$columna] = isset($unicos[$index]);
+                $assoc_unicos[$columna] = $unicos[$index] ?? 0;
 
-                if (isset($es_foranea[$index])) {
+                if (($es_foranea[$index] ?? 0)) {
                     $on_table_value = $on_table[$index] ?? null;
                     $on_column_value = $on_row[$index] ?? null;
 
@@ -271,9 +277,8 @@ class TablasModulosController extends Controller
                         ];
                     }
                 }
-
-
         }
+
         // ----> Traemos la info del registro de tablas_modulos
         //dd($assoc_limite);
 

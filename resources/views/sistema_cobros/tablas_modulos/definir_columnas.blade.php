@@ -42,7 +42,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                         @foreach ($archivo_info["columnas"] as $index=>$columna)
+                        @foreach ($archivo_info["columnas"] as $index=>$columna)
                             @include('components.form_creator.tipos_datos_dropdown',[
                                 "name"=>$columna,
                                 "index"=>$index,
@@ -52,7 +52,6 @@
                             ])
                         @endforeach
                     </tbody>
-
                     </table>
                 <x-boton nombre_boton="Guardar columnas" type="submit" classes="btn-submit btn btn-primary float-end" parentClass="col-12 pt-5 float-end"/>
                 </form>

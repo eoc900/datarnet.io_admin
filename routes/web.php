@@ -170,12 +170,12 @@ Route::middleware(['auth','verified'])->group(function () {
     // Excel
     Route::post('/excel/read', [FileExcelCsvReadController::class,'read'])->name('excel.read');
     Route::get('/cargar_calificaciones',[FileExcelCsvReadController::class,'cargarCalificaciones'])->name('excel.cargar_calificaciones');
-    Route::get('/crear_archivo', [TablasModulosController::class, 'crearArchivo'])->name('crear.archivo');
-    Route::post('/subir_archivo', [TablasModulosController::class, 'insertarArchivo'])->name('insertar.archivo');
+    Route::get('/crear_archivo', [TablasModulosController::class, 'crearArchivo'])->name('crear.archivo'); // PASO A
+    Route::post('/subir_archivo', [TablasModulosController::class, 'insertarArchivo'])->name('insertar.archivo'); // PASO A -> PASO B
     Route::post('/cargar_tabla', [TablasModulosController::class, 'cargarDatosTabla'])->name('cargar.datos');
-    Route::get('/ver_cargar_tabla/{id_tabla?}', [TablasModulosController::class, 'verCargarDatosTabla'])->name('ver_cargar.datos');
-    Route::get('/definir_columnas',[TablasModulosController::class,'definirColumnas'])->name('tablas_modulos.definir_columnas');
-    Route::post('/subir_columnas', [TablasModulosController::class, 'insertarColumnas'])->name('insertar.columnas');
+    Route::get('/ver_cargar_tabla/{id_tabla?}', [TablasModulosController::class, 'verCargarDatosTabla'])->name('ver_cargar.datos'); // PASO A -> B -> C
+    Route::get('/definir_columnas',[TablasModulosController::class,'definirColumnas'])->name('tablas_modulos.definir_columnas'); // PASO A -> B -> D
+    Route::post('/subir_columnas', [TablasModulosController::class, 'insertarColumnas'])->name('insertar.columnas'); // PASO A -> B -> D -> E
     Route::get('/contenido/{archivo}', [TablasModulosController::class, 'testDocument']);
     Route::get('/descargar_tabla/{id_tabla}', [TablasModulosController::class, 'descargarCSV'])->name('descargar_tabla');
 

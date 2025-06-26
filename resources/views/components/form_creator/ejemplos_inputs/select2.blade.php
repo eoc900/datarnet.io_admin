@@ -71,7 +71,7 @@
                     <select class="select2-components mt-5 mb-5 form-control"
                     data-tags="true" data-placeholder="{{ $placeholder }}" data-allow-clear="true" id="{{ $id }}" name="{{ $name }}">
                         @if(isset($id_seleccionado))
-                            <option value="{{ $id_seleccionado }}" selected>{{ $texto_concatenado}}</option>
+                            <option value="{{ $id_seleccionado }}" selected>{{ $texto_concatenado ?? ''}}</option>
                         @endif
                     </select>
 
