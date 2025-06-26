@@ -36,6 +36,7 @@ class TablasModulos{
                         'boolean' => 'Booleano',
                         'datetime' => 'Fecha/Tiempo',
                         'date' => 'Fecha',
+                        'time' => 'Tiempo',
                         'decimal' => 'Decimal',
                         default => $tipo
                     };
@@ -48,7 +49,8 @@ class TablasModulos{
                         "Cadena" => isset($limit) ? $table->string($columna, $limit) : $table->string($columna),
                         "Fecha/Tiempo" => $table->datetime($columna),
                         "Fecha" => $table->date($columna),
-                        default => $table->string($columna),
+                        "Tiempo" => $table->time($columna),
+                        default => $table->string($columna)
                     };
 
                     if ($assoc_unicos[$columna] ?? false) {

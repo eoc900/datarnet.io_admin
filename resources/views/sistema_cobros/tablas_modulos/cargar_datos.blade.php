@@ -3,6 +3,31 @@
 
 <div class="card">
     <div class="card-body">
+        @if (!isset($id_tabla))
+            <h5>Carga de datos (1 sola hoja de excel)</h5>
+        @endif
+
+        <div class="col-sm-6 mb-4">
+            <label for="seleccionar_tabla" class="form-label">Selecciona una tabla:</label>
+            <form method="GET" action="{{ route('ver_cargar.datos') }}">
+                <select name="id_tabla" id="seleccionar_tabla" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Elige una tabla --</option>
+                    @foreach($tablasDisponibles as $tablaNombre)
+                            @php
+                                // Buscar el id real en la tabla_tablas_modulos
+                                $tablaRecord = \App\Models\TablaModulo::where('nombre_tabla', $tablaNombre)->first();
+                            @endphp
+                            @if ($tablaRecord)
+                                <option value="{{ $tablaRecord->id }}" {{ ($id_tabla == $tablaRecord->id) ? 'selected' : '' }}>
+                                    {{ $tablaRecord->nombre_tabla }}
+                                </option>
+                            @endif
+                        @endforeach
+
+                </select>
+            </form>
+        </div>
+
         @include('components.sistema_cobros.response')
             @if (isset($id_tabla))
 

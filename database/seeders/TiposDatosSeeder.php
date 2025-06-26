@@ -32,6 +32,9 @@ class TiposDatosSeeder extends Seeder
             'updated_at' => now()],
              ['tipo_dato' => 'Fecha',
             'created_at' => now(),
+            'updated_at' => now()],
+            ['tipo_dato' => 'Tiempo',
+            'created_at' => now(),
             'updated_at' => now()]
            
         ]);

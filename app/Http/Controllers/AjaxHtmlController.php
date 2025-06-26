@@ -286,6 +286,10 @@ class AjaxHtmlController extends Controller
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
         return view('components.form_creator.date_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
     }
+     public function formCreatorTimeConfig(Request $request){
+        $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
+        return view('components.form_creator.time_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
+    }
     public function formCreatorDatetimeConfig(Request $request){
         $subcampo = filter_var($request->input("es_subcampo", true), FILTER_VALIDATE_BOOLEAN);
         return view('components.form_creator.datetime_config',["subcampo"=>$subcampo,"i"=>$request->input("index")]);
@@ -337,7 +341,8 @@ class AjaxHtmlController extends Controller
 
             case 'date':
                 return view('sistema_cobros.form_creator.components.validaciones.date', compact('index'));
-
+            case 'time':
+                return view('sistema_cobros.form_creator.components.validaciones.date', compact('index'));
             case 'email':
                 return view('sistema_cobros.form_creator.components.validaciones.email', compact('index'));
 

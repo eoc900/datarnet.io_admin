@@ -34,26 +34,23 @@
               <li><a href="/crear_archivo" class="fs-6"><i class="lni lni-circle-plus"></i> Generar tabla</a></li> 
               @endif
               @if(auth()->user()->can('Cargar tablas'))
-              <li><a href="/cargar_datos" class="fs-6"><i class="lni lni-circle-plus"></i> Cargar datos</a></li> 
+              <li><a href="/ver_cargar_tabla" class="fs-6"><i class="lni lni-circle-plus"></i> Cargar datos</a></li> 
               @endif
-              @if(auth()->user()->can('Crear queries'))
+              {{-- @if(auth()->user()->can('Crear queries'))
               <li><a href="/sql_creator/create" class="fs-6"> <i class="lni lni-circle-plus"></i> Crear query</a></li> 
-              @endif
+              @endif --}}
               @if(auth()->user()->can('Crear formularios'))
               <li class="fs-12"><a href="{{ route('form_creator.create'); }}"><i class="lni lni-circle-plus"></i> Crear formulario</a></li>
               @endif
               @if(auth()->user()->can('Crear liga'))
               <li class="fs-12"><a href="{{ route('ligas_formulario.create'); }}"><i class="lni lni-circle-plus"></i> Crear liga</a></li>
               @endif
-              @if(auth()->user()->can('Crear dashboards'))
-                <li class="fs-12"><a href="/dashboard/create"><i class="lni lni-layout"></i> Crear dashboard</a></li>
-              @endif
                @if(auth()->user()->can('Crear informe'))
                 <li class="fs-12"><a href="/informes/create"><i class="lni lni-layout"></i> Crear informe</a></li>
               @endif
-              @if(auth()->user()->can('Ver queries'))
+              {{-- @if(auth()->user()->can('Ver queries'))
               <li class="fs-12"><a href="/sql_creator"><i class="lni lni-code-alt"></i> Queries creados</a></li>
-              @endif
+              @endif --}}
               @if(auth()->user()->can('Ver archivos'))
               <li class="fs-12"><a href="/archivos"><i class="lni lni-empty-file"></i> Documentos excel</a></li>
               @endif
@@ -109,27 +106,28 @@
           </li>
           @endif
 
-          <li>
-              <a class="has-arrow" href="javascript:;" aria-expanded="true">
-                  <div class="font-20">	<i class="lni lni-consulting"></i>
-							    </div>
-                  <div class="menu-title">Usuarios</div>
-              </a>
-              <ul class="mm-collapse" style="">
-                <li><a href="{{ route('users.index'); }}" class="fs-20"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users text-primary"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                  <span class="ps-3">Usuarios</span></a>
-                </li>
-                <li><a href="{{ route('roles.index') }}" class="fs-20">
-                  <i class="fadeIn animated bx bx-id-card"></i>
-                   <span class="ps-3"> Roles</span></a>
-                </li>
-                <li><a href="{{ route('permisos.index') }}" class="fs-20">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle text-primary"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                   <span class="ps-3">Permisos</span></a>
-                </li>  
-              </ul>
-
-          </li>
+          @if(auth()->user()->hasAnyRole(['Administrador tecnológico','Owner'])) 
+            <li>
+                <a class="has-arrow" href="javascript:;" aria-expanded="true">
+                    <div class="font-20">	<i class="lni lni-consulting"></i>
+                    </div>
+                    <div class="menu-title">Usuarios</div>
+                </a>
+                <ul class="mm-collapse" style="">
+                  <li><a href="{{ route('users.index'); }}" class="fs-20"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users text-primary"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span class="ps-3">Usuarios</span></a>
+                  </li>
+                  <li><a href="{{ route('roles.index') }}" class="fs-20">
+                    <i class="fadeIn animated bx bx-id-card"></i>
+                    <span class="ps-3"> Roles</span></a>
+                  </li>
+                  <li><a href="{{ route('permisos.index') }}" class="fs-20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle text-primary"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span class="ps-3">Permisos</span></a>
+                  </li>  
+                </ul>
+            </li>
+          @endif
         
           
           

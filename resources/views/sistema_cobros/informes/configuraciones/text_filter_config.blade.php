@@ -8,7 +8,7 @@
     <select class="form-select" id="opcionesFiltroTexto" name="modo_visual_filtro_texto">
         <option value="select2" {{ ($filtros['text']['mode'] ?? '') == 'select2' ? 'selected' : '' }}>Buscador select2</option>
         <option value="botones" {{ ($filtros['text']['mode'] ?? '') == 'botones' ? 'selected' : '' }}>Botones</option>
-        <option value="dropdown" {{ ($filtros['text']['mode'] ?? '') == 'dropdown' ? 'selected' : '' }}>Dropdown</option>
+        <option value="dropdown" {{ ($filtros['text']['mode'] ?? '') == 'tabla_enlazada' ? 'selected' : '' }}>Dropdown</option>
     </select>
 
     </div>

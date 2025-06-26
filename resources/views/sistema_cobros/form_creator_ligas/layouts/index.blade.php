@@ -6,6 +6,7 @@
     <link href="{{  asset("dashboard_resources/assets/css/style.css");}}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{{ asset("landing/assets/css/font-awesome-pro.css");}}">
 
       
 </head>

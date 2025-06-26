@@ -8,6 +8,18 @@
     <h5>Crear una nueva liga</h5>
 </div>
 <div class="card-body">
+          <div class="alert alert-success border-0 bg-grd-info alert-dismissible fade show">
+                <div class="d-flex align-items-center">
+                        <div class="font-35 text-white"><i class="fa-light fa-link"></i>
+
+                        </div>
+                        <div class="ms-3">
+                        <h6 class="mb-0 text-white">Uso:</h6>
+                        <div class="text-white">Las ligas sirven para hacer enlaces personalizados de formularios públicos</div>
+                </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     <form class="row" method="post" action="{{ route('ligas_formulario.store') }}" enctype="multipart/form-data" id="guardar_formulario">
         @csrf
         <x-lista-mensajes/>

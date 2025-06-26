@@ -24,12 +24,25 @@
     
 
 
+@elseif(isset($simple_dropdown))
+
+
+    <label for="" class="form-label">{{ $label }}</label>
+    <select name="{{ $name }}" id="" class="form-control {{ $class ?? '' }}">
+        @foreach ($resultados as $resultado)
+            <option value="{{ $resultado->value }}" {{ (isset($value) && $value == $resultado->value) ? 'selected' : '' }}>
+                {{ $resultado->option }}
+            </option>
+        @endforeach
+    </select>
+
+
 @else
 
     @if (isset($resultados))
     {{-- arreglo dropdown tiene un formato así ["value"=>"nombre_columna","option"=>"nombre_columna"] --}}
     <label for="" class="form-label">{{ $label }}</label>
-    <select name="{{ $name }}" id="" class="form-control">
+    <select name="{{ $name }}" id="" class="form-control {{ $class ?? '' }}">
         @foreach ($resultados as $resultado)
             <option value="{{ $resultado->value }}" {{ ($value==$resultado->value)?"selected":'' }}>{{ $resultado->option }}</option>
         @endforeach

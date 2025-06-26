@@ -414,50 +414,62 @@ class InformesController extends Controller
      * Display the specified resource.
      */
     public function show(Request $request, string $id)
-{
-    $path = "informes/{$id}.json";
+    {
+        $path = "informes/{$id}.json";
 
-    if (!Storage::exists($path)) {
-        return view('sistema_cobros.commons.404', ["title" => "Error 404"]);
-    }
+        if (!Storage::exists($path)) {
+            return view('sistema_cobros.commons.404', ["title" => "Error 404"]);
+        }
 
-    $data = Storage::disk('local')->get($path);
-    $jsonDecoded = json_decode($data, true);
+        $data = Storage::disk('local')->get($path);
+        $jsonDecoded = json_decode($data, true);
 
-    // Título general
-    $jsonDecoded["titulo"] = $jsonDecoded["nombre_informe"];
-    $jsonDecoded["title"] = $jsonDecoded["nombre_informe"];
+        // Título general
+        $jsonDecoded["titulo"] = $jsonDecoded["nombre_informe"];
+        $jsonDecoded["title"] = $jsonDecoded["nombre_informe"];
 
-    // Parámetros desde la URL
-    $fechaInicio = $request->query('inicio');
-    $fechaFin = $request->query('finaliza');
-    $texto = $request->query('texto');
+        // Parámetros desde la URL
+        $fechaInicio = $request->query('inicio');
+        $fechaFin = $request->query('finaliza');
+        $texto = $request->query('texto');
 
-    $fechaInicio = $request->query('inicio') 
-        ?? Carbon::now()->startOfMonth()->toDateString(); // Primer día del mes
-    $fechaFin = $request->query('finaliza') 
-        ?? Carbon::now()->endOfMonth()->toDateString();   // Último día del mes
+        $fechaInicio = $request->query('inicio') 
+            ?? Carbon::now()->startOfMonth()->toDateString(); // Primer día del mes
+        $fechaFin = $request->query('finaliza') 
+            ?? Carbon::now()->endOfMonth()->toDateString();   // Último día del mes
 
-    $jsonDecoded["default_start"] = $fechaInicio;
-    $jsonDecoded["default_end"] = $fechaFin;
-    $filtros = [
-    'fecha_inicial' => Carbon::parse($fechaInicio)->startOfDay()->toDateTimeString(),
-    'fecha_finaliza' => Carbon::parse($fechaFin)->endOfDay()->toDateTimeString(),
-    'dos_fechas' => Carbon::parse($fechaInicio)->startOfDay()->format('Y-m-d H:i:s') . ',' . Carbon::parse($fechaFin)->endOfDay()->format('Y-m-d H:i:s'),
-    'texto_busqueda' => $request->query('texto'),
-];
+        $jsonDecoded["default_start"] = $fechaInicio;
+        $jsonDecoded["default_end"] = $fechaFin;
+        $filtros = [
+            'fecha_inicial' => Carbon::parse($fechaInicio)->startOfDay()->toDateTimeString(),
+            'fecha_finaliza' => Carbon::parse($fechaFin)->endOfDay()->toDateTimeString(),
+            'dos_fechas' => Carbon::parse($fechaInicio)->startOfDay()->format('Y-m-d H:i:s') . ',' . Carbon::parse($fechaFin)->endOfDay()->format('Y-m-d H:i:s'),
+            'texto_busqueda' => $request->query('texto'),
+        ];
 
 
+        // Checamos si en los filtros hay propiedad de texto con mode
+        if(isset($jsonDecoded["filtros"]) && isset($jsonDecoded["filtros"]["text"]) && isset($jsonDecoded["filtros"]["text"]["mode"]) && $jsonDecoded["filtros"]["text"]["mode"]=="tabla_enlazada"){
 
-    // Recorremos cada sección para ejecutar su query si existe
-    foreach ($jsonDecoded["secciones"] as $index => $seccion) {
-        $seccion["resultados"] = isset($seccion['query'])
-            ? collect(Informes::ejecutarConsulta($seccion['query'], $filtros))
-            : collect();
-        $jsonDecoded["secciones"][$index] = $seccion;
-    }
 
-    return view("sistema_cobros.informes.show", $jsonDecoded);
+            // Preparamos valores 
+            $resultados = DB::table($jsonDecoded["filtros"]["text"]["tabla_enlazada"])->select($jsonDecoded["filtros"]["text"]["valor_opcion_tabla_enlazada"]." as value",$jsonDecoded["filtros"]["text"]["texto_opcion_tabla_enlazada"]." as option")->distinct()->get();
+            $jsonDecoded["filtros"]["text"]["resultados"] = $resultados;
+            $jsonDecoded["filtros"]["text"]["label"] = "Buscar por";
+        
+
+
+        }
+
+
+        // Recorremos cada sección para ejecutar su query si existe
+        foreach ($jsonDecoded["secciones"] as $index => $seccion) {
+            $seccion["resultados"] = isset($seccion['query'])
+                ? collect(Informes::ejecutarConsulta($seccion['query'], $filtros))
+                : collect();
+            $jsonDecoded["secciones"][$index] = $seccion;
+        }
+        return view("sistema_cobros.informes.show", $jsonDecoded);
 }
 
     

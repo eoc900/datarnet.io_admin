@@ -2,18 +2,43 @@
 @section("content")
 @include('components.sistema_cobros.response')
 
+@php
+    
+    // Tipo de buscador en el header
+    $tipo = '';
+    $resultados_drop = ($filtros["text"]["resultados"])?$filtros["text"]["resultados"]:'';
+
+@endphp
+
+
 @if(auth::user()->can($permiso) || auth::user()->hasRole(["Administrador tecnológico","Owner"]))
 <div class="card">
     <div class="card-header pt-3">
         <h5>{{ $titulo ?? '' }}</h5>
     </div>
-
      <div class="card-body mx-5 p-4 mb-5">
          <div class="row mt-3 mb-5">
             @foreach ($filtros as $index=>$filtro)            
                         @if ($index=="text")
                             @if($filtro["mode"]==="select2")
-                            @include("components.form_creator.ejemplos_inputs.select2",$filtro)
+                                @php
+                                    $tipo="select2"
+                                @endphp
+                                @include("components.form_creator.ejemplos_inputs.select2",$filtro)
+                            @endif
+                            @if($filtro["mode"]==="tabla_enlazada")
+                                @php
+                                    $tipo="dropdown"
+                                @endphp
+
+                       
+                                @include("components.form_creator.ejemplos_inputs.dropdown",[
+                                        "resultados"=>$resultados_drop ,
+                                        "label"=>$filtro["label"],
+                                        "name"=>"dropdown",
+                                        "class"=>"buscador_dropdown",
+                                        "simple_dropdown"=>true
+                                    ])
                             @endif
                         @endif
                         @if ($index=="date")
@@ -78,13 +103,27 @@ function eventoActivarFiltrado() {
 
         const fechaInicio = $('#filtro_fecha_inicio').val();
         const fechaFinaliza = $('#filtro_fecha_finaliza').val();
-        const textoBusqueda = $('.select2-components').val();
+
+      
+        var textoBusqueda = '';
+        @if($tipo=="select2")
+                textoBusqueda = $('.select2-components').val();
+        @endif
+        @if($tipo=="dropdown")
+                textoBusqueda = $('.buscador_dropdown').val();
+        @endif
+            
+
+            
+   
+       
+        console.log("textoBusqueda");
 
         const params = new URLSearchParams();
 
         if (fechaInicio) params.append('inicio', fechaInicio);
         if (fechaFinaliza) params.append('finaliza', fechaFinaliza);
-        if (textoBusqueda) params.append('texto', textoBusqueda);
+        if (textoBusqueda && textoBusqueda!='') params.append('texto', textoBusqueda);
 
         const urlActual = window.location.pathname;
         const idInforme = urlActual.split('/').pop();

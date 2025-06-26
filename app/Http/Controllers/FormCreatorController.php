@@ -490,6 +490,24 @@ class FormCreatorController extends Controller
                             ];
                         $inputs[] = $objeto;
                     break;
+                    case "time":
+                        $type = $input;
+                        // Aquí validamos si se activó la validación para ese índice
+                        $validaciones = $request->input("validacion_activada.$index")
+                            ? $request->input("reglas.$index")
+                            : false;
+                        $name = $request->input("name")[$index];
+                        $label = $request->input("label")[$index];
+                        $formato = $request->input("inputs")[$index]["formato_fecha"];
+                        $objeto = [
+                                "type"=>$type,
+                                "formato"=>$formato,
+                                "name"=>$name,
+                                "label"=>$label,
+                                "validacion"=>$validaciones
+                            ];
+                        $inputs[] = $objeto;
+                    break;
                     case "datetime":
                         $type = $input;
                         // Aquí validamos si se activó la validación para ese índice
@@ -698,6 +716,14 @@ class FormCreatorController extends Controller
                             "formato" => $subcampo["formato_fecha"] ?? 'Y-m-d'
                         ];
                         break;
+                    case "time":
+                        $campos_procesados[] = [
+                            "type" => "time",
+                            "label" => $subcampo["label"] ?? '',
+                            "name" => $subcampo["name"] ?? '',
+                            "formato" => $subcampo["formato_fecha"] ?? 'Y-m-d H:i'
+                        ];
+                        break;
                     case "datetime":
                         $campos_procesados[] = [
                             "type" => "datetime",
@@ -798,6 +824,13 @@ class FormCreatorController extends Controller
                     $formato = $request->formato_fecha;
                     $res = ["label"=>$label,"name"=>$name,"formato"=>$formato,"ejemplo"=>true];
                     return view("components.form_creator.ejemplos_inputs.date",$res);
+                break;
+                case "time":
+                    $name = $request->name;
+                    $label = $request->label;
+                    $formato = $request->formato_fecha;
+                    $res = ["label"=>$label,"name"=>$name,"formato"=>$formato,"ejemplo"=>true];
+                    return view("components.form_creator.ejemplos_inputs.time",$res);
                 break;
                 case "datetime":
                     $name = $request->name;
@@ -1331,7 +1364,7 @@ public function editarRegistro(string $tabla="",string $id=""){
     //5. Iterar los inputs
     foreach($jsonDecoded["inputs"] as $index=>$input){
         
-        if($input["type"] === "text" || $input["type"] === "datetime" || $input["type"] === "date" || $input["type"] === "email" || $input["type"] === "radio"){
+        if($input["type"] === "text" || $input["type"] === "datetime" || $input["type"] === "date" || $input["type"] === "time" || $input["type"] === "email" || $input["type"] === "radio"){
             try {
                 $jsonDecoded["inputs"][$index]["value"] = $valores->{$input["name"]};
             } catch (\Throwable $th) {
@@ -1348,10 +1381,7 @@ public function editarRegistro(string $tabla="",string $id=""){
             $jsonDecoded["inputs"][$index]["ejemplo"] = false;
         }
 
-        if($input["type"]=="date"){
-            $jsonDecoded["inputs"][$index]["value"] = $valores->{$input["name"]};
-
-        }
+        
 
         if($input["type"]=="checkbox"){
             //Obtener la cadena guardada de opciones separadas por comas

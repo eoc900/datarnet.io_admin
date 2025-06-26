@@ -9,6 +9,7 @@
             ["value"=>"text","option"=>"Campo de texto abierto"],
             ["value"=>"radio","option"=>"Botones circulares"],
             ["value"=>"datetime","option"=>"Fecha y hora"],
+            ["value"=>"time","option"=>"Tiempo en horas"],
             ["value"=>"date","option"=>"Fecha"],
             ["value"=>"email","option"=>"Correo electrónico"],
             ["value"=>"file","option"=>"Archivo"],

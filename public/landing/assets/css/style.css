@@ -26,4 +26,7 @@
    z-index: 3;
    bottom:100px;
 }
+.flatpickr-calendar {
+   position: absolute !important;
+}
 

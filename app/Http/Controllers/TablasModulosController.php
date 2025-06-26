@@ -189,21 +189,32 @@ class TablasModulosController extends Controller
         ]);
 
     }
+    public function verCargarDatosTabla(Request $request, string $id_tabla = null)
+    {
+        // Si no llegó el parámetro vía ruta, lo tomamos de query string
+        $id_tabla = $id_tabla ?? $request->get('id_tabla');
 
-    public function verCargarDatosTabla(string $id_tabla){
-        $existe_tabla = TablaModulo::where('id',$id_tabla)->first();
-        
-        if($existe_tabla){
-            $columnas = ColumnaTabla::where("id_tabla",$id_tabla)->get();
-            return view("sistema_cobros.tablas_modulos.cargar_datos",[
-                "title"=>"Cargar datos",
-                "id_tabla"=>$id_tabla,
-                "tabla"=>$existe_tabla->nombre_tabla,
-                "columnas"=>$columnas
-            ]);
+        $tablasDisponibles = \App\Services\DatabaseService::obtenerTablasConPrefijo('modulo_');
+        $existe_tabla = null;
+        $columnas = collect();
+
+        if ($id_tabla) {
+            $existe_tabla = TablaModulo::where('id', $id_tabla)->first();
+            if ($existe_tabla) {
+                $columnas = ColumnaTabla::where("id_tabla", $id_tabla)->get();
+            }
         }
-        return "No se encontraron datos";
+
+        return view("sistema_cobros.tablas_modulos.cargar_datos", [
+            "title" => "Cargar datos",
+            "id_tabla" => $id_tabla,
+            "tabla" => $existe_tabla ? $existe_tabla->nombre_tabla : null,
+            "columnas" => $columnas,
+            "tablasDisponibles" => $tablasDisponibles
+        ]);
     }
+
+
 
     // Definir las columnas
     public function definirColumnas(){
@@ -323,31 +334,21 @@ class TablasModulosController extends Controller
 
     public function cargarDatosTabla(Request $request)
     {
-        $request->validate([
-            'id_tabla' => 'required|exists:tablas_modulos,id',
-            'archivo' => 'required|file|mimes:xlsx,xls,csv|max:10240' // 10MB máximo
-        ]);
+            $request->validate([
+                'id_tabla' => 'required|exists:tablas_modulos,id',
+                'archivo' => 'required|file|mimes:xlsx,xls,csv|max:10240'
+            ]);
 
-        $tabla = TablaModulo::find($request->id_tabla);
-        
-        if (!$tabla) {
-            return response()->json(['error' => 'Tabla no encontrada'], 404);
-        }
-
-        // Procesar el archivo subido
-        if ($request->hasFile('archivo')) {
-            $archivo = $request->file('archivo');
-            
-            // Validar extensión
-            $extension = $archivo->getClientOriginalExtension();
-            if (!in_array($extension, ['xlsx', 'xls', 'csv'])) {
-                return response()->json(['error' => 'El archivo debe ser un documento Excel (xlsx, xls) o CSV'], 400);
+            $tabla = TablaModulo::find($request->id_tabla);
+            if (!$tabla) {
+                return back()->with(['error' => 'Tabla no encontrada']);
             }
 
-            // Limpiar el nombre del archivo
+            $ignorarLlavesPrimarias = $request->has('ignorar_llaves_primarias');
+            $ignorarCamposVacios = $request->has('ignorar_campos_vacios');
+
+            $archivo = $request->file('archivo');
             $nombreOriginal = str_replace(' ', '_', $archivo->getClientOriginalName());
-            
-            // Guardar en storage temporal
             $rutaArchivo = $archivo->storeAs('archivos/temporal', $nombreOriginal);
             $filePath = storage_path('app/'.$rutaArchivo);
 
@@ -359,41 +360,97 @@ class TablasModulosController extends Controller
                     ["id", "updated_at", "created_at"]
                 );
 
-                // Procesar el archivo
-                $resultados = $tablaModel->obtenerArregloV3(
+                // Cargar el arreglo de registros desde el archivo
+                $registros = $tablaModel->obtenerArregloV3(
                     $tabla->nombre_tabla,
                     $nombreOriginal,
                     $request,
                     $columnasEsperadas
                 );
 
-                // Eliminar el archivo temporal después de procesarlo
-                if (file_exists($filePath)) {
-                    unlink($filePath);
+                // Eliminar archivo temporal
+                unlink($filePath);
+
+                if (empty($registros)) {
+                    return back()->with(['error' => 'No se insertó ningún dato']);
                 }
 
-                if(!empty($resultados)){
-                    DB::table($tabla->nombre_tabla)->insert($resultados);
-                    return back()->with(["success"=>"Se insertaron los (".count($resultados).") registros exitosamente."]);
-                }else{
-                    return back()->with(["error"=>"No se insertó ningún dato."]);
+                // Procesar registros
+                $registrosLimpios = $this->filtrarRegistros($registros, $tabla->nombre_tabla, $columnasEsperadas, $ignorarCamposVacios);
+
+
+
+                if (empty($registrosLimpios)) {
+                    return back()->with(['error' => 'Todos los registros fueron omitidos por duplicados o vacíos.']);
                 }
-                
+
+                DB::table($tabla->nombre_tabla)->insert($registrosLimpios);
+
+                return back()->with(['success' => 'Se insertaron ('.count($registrosLimpios).') registros exitosamente.']);
 
             } catch (\Exception $e) {
-                // Asegurarse de eliminar el archivo incluso si hay errores
                 if (file_exists($filePath)) {
                     unlink($filePath);
                 }
-                
+
                 return back()->with([
                     'error' => 'Error al procesar el archivo: '.$e->getMessage()
                 ]);
             }
-        }
-
-        return response()->json(['error' => 'No se encontró archivo para procesar'], 400);
     }
+
+    //Funcion auxiliar cargarDatosTabla
+    private function filtrarRegistros(array $registros, string $nombreTabla, array $columnasEsperadas, bool $ignorarCamposVacios): array
+    {
+        $columnasSinID = array_filter($columnasEsperadas, fn($col) => $col !== 'id');
+        $camposUnicos = $this->obtenerCamposUnicos($nombreTabla);
+
+        return collect($registros)
+            ->map(function ($fila) use ($columnasSinID) {
+                return collect($fila)->only($columnasSinID)->toArray();
+            })
+            ->filter(function ($fila) use ($ignorarCamposVacios, $camposUnicos, $nombreTabla) {
+                if ($ignorarCamposVacios) {
+                    if (collect($fila)->contains(fn($v) => is_null($v) || $v === '')) {
+                        return false;
+                    }
+                }
+
+                // Verificar duplicados por campos únicos
+                foreach ($camposUnicos as $campo) {
+                    if (!isset($fila[$campo])) continue;
+
+                    $existe = DB::table($nombreTabla)
+                        ->where($campo, $fila[$campo])
+                        ->exists();
+
+                    if ($existe) return false;
+                }
+
+                return true;
+            })
+            ->values()
+            ->all();
+    }
+
+
+    private function obtenerCamposUnicos(string $nombreTabla): array
+    {
+        $dbName = DB::getDatabaseName();
+
+        return DB::table('information_schema.STATISTICS')
+            ->select('COLUMN_NAME')
+            ->where('TABLE_SCHEMA', $dbName)
+            ->where('TABLE_NAME', $nombreTabla)
+            ->where('NON_UNIQUE', 0) // UNIQUE = 0
+            ->where('INDEX_NAME', '!=', 'PRIMARY')
+            ->pluck('COLUMN_NAME')
+            ->toArray();
+    }
+
+
+
+
 
 
   

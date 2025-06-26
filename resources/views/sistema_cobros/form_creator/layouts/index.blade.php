@@ -68,6 +68,9 @@
                   case "date":
                     ajaxDateConfig(input_segment,index);
                   break;
+                  case "time":
+                    ajaxTimeConfig(input_segment,index);
+                  break;
                   case "datetime":
                     ajaxDatetimeConfig(input_segment,index);
                   break;
@@ -214,6 +217,33 @@
                   $("body").find(".configuracion-input").eq(index-1).find(".formato-fecha").attr("name","inputs["+(index-1)+"][formato_fecha]");
                     // Se selecciona una tabla de referencia en la configuración
                   eventoClickPrevisualizarDate();
+                  removeConfigInput();
+                  // Para configuración de validación
+                  activarValidacionCheckbox();
+                  
+                  }
+          });
+      }
+      function ajaxTimeConfig(inputSegment,index,subcampo=false){ 
+          $.ajax({
+                  url: '{{ url("/ajax/formCreatorTimeConfig") }}',
+                  method: "post",
+                  data: {_token:'{{csrf_token()}}',es_subcampo:subcampo,index:index},
+                  success: function(response){
+
+                  if(subcampo){
+                    $('#contenido-subcampo').html('');
+                    $(inputSegment).append(response);
+                    return;
+                  }
+                      
+                  var segment = $(inputSegment).find(".campos-configuracion"); // Donde se agrega la configuración de cada input
+                  segment.append(response);
+                  // Asignar el atributo a name="inputs[i][]"
+                  let index = $(".contenedor_campos").find(".configuracion-input").length;
+                  $("body").find(".configuracion-input").eq(index-1).find(".formato-fecha").attr("name","inputs["+(index-1)+"][formato_fecha]");
+                    // Se selecciona una tabla de referencia en la configuración
+                  eventoClickPrevisualizarTime();
                   removeConfigInput();
                   // Para configuración de validación
                   activarValidacionCheckbox();
@@ -431,6 +461,9 @@
                     break;
                 case "date":
                     ajaxDateConfig('#contenido-subcampo',index,true);
+                    break;
+                case "time":
+                    ajaxTimeConfig('#contenido-subcampo',index,true);
                     break;
                 case "datetime":
                     ajaxDatetimeConfig('#contenido-subcampo',index,true);
@@ -693,6 +726,16 @@
             alert("Por favor llena todos los campos para poder ver la previsualización");
         }
       }
+      function previsualizacionTime(obj){
+        let label = $(obj).find('[name="label[]"]').val();
+        let name = $(obj).find('[name="name[]"]').val();
+        let formato = $(obj).find('.formato-fecha').val();
+        if (label && name && formato) {
+            ajaxCargarEjemploDatetime("time",label,name,formato);
+        }else{
+            alert("Por favor llena todos los campos para poder ver la previsualización");
+        }
+      }
       function previsualizacionDatetime(obj){
         let label = $(obj).find('[name="label[]"]').val();
         let name = $(obj).find('[name="name[]"]').val();
@@ -783,6 +826,13 @@
         $('.previsualizar-btn').click(function(){
             var obj = $(this).closest(".configuracion-input");
             previsualizacionDate(obj); // VARÍA
+        });
+      }
+      function eventoClickPrevisualizarTime(){
+        $('.previsualizar-btn').off();
+        $('.previsualizar-btn').click(function(){
+            var obj = $(this).closest(".configuracion-input");
+            previsualizacionTime(obj); // VARÍA
         });
       }
       function eventoClickPrevisualizarDatetime(){

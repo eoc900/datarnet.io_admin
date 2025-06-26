@@ -11,6 +11,9 @@
                 @if ($input["type"]=="date")
                     @include("components.form_creator.date_config",["input"=>$input,"i"=>$index])
                 @endif
+                @if ($input["type"]=="time")
+                    @include("components.form_creator.time_config",["input"=>$input,"i"=>$index])
+                @endif
                 @if ($input["type"]=="datetime")
                     @include("components.form_creator.datetime_config",["input"=>$input,"i"=>$index])
                 @endif

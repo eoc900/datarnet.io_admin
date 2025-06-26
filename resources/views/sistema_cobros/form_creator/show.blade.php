@@ -30,6 +30,11 @@
                     @include("components.form_creator.ejemplos_inputs.date",["campo"=>$input,"show"=>true,"tabla"=>$tabla,"index"=>0])
                     </div>
                 @endif
+                @if ($input["type"]=="time")
+                    <div class="col-sm-4 mt-3">
+                    @include("components.form_creator.ejemplos_inputs.time",["campo"=>$input,"show"=>true,"tabla"=>$tabla,"index"=>0])
+                    </div>
+                @endif
                 @if ($input["type"]=="datetime")
                     <div class="col-sm-4 mt-3">
                     @include("components.form_creator.ejemplos_inputs.datetime",["campo"=>$input,"show"=>true,"tabla"=>$tabla,"index"=>0])
