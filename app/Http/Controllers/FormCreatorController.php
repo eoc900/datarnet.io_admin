@@ -1366,55 +1366,27 @@ public function editarRegistro(string $tabla="",string $id=""){
         }
 
         // Obtener el valor original del select2
-         if ($input["type"] === "select2") {
+        if ($input["type"] === "select2") {
+                $idSeleccionado = $valores->{$input["name"]}; // El ID guardado
 
-                    // Obtener el ID original del campo select2
-                    $ident = DB::table($input["tabla"])
-                        ->where($input["principal"], $valores->{$input["name"]})
-                        ->pluck($input["principal"])
-                        ->first();
+                // Buscar en la tabla el registro por ID
+                $registro = DB::table($input["tabla"])
+                    ->where($input["principal"], $idSeleccionado)
+                    ->first();
 
-                    $jsonDecoded["inputs"][$index]["id_seleccionado"] = $ident;
+                $texto = '';
+                if ($registro) {
+                    // Concatenar campos de "retornar" para mostrar texto en el select2
+                    $texto = collect($input["retornar"])
+                        ->map(fn($campo) => $registro->{$campo} ?? '')
+                        ->implode(' ');
+                }
 
-                    // Verificar si hay campos concatenados
-                    if (isset($input["campos_concatenados"]) && is_array($input["campos_concatenados"])) {
+                // Precargar el texto y el id al JSON que usarás en la vista
+                $jsonDecoded["inputs"][$index]["id_seleccionado"] = $idSeleccionado;
+                $jsonDecoded["inputs"][$index]["texto_concatenado"] = trim($texto);
+            }
 
-                        // Agrupar campos por nivel (concat:1, concat:2, etc.)
-                        $niveles = [];
-
-                        foreach ($input["campos_concatenados"] as $campo) {
-                            [$prefix, $nivel, $columnaCompleta] = explode(":", $campo, 3);
-                            $niveles[$nivel][] = $columnaCompleta;
-                        }
-
-                        // Filtrar solo niveles con 2 o más campos
-                        $niveles_validos = array_filter($niveles, function($grupo) {
-                            return count($grupo) >= 2;
-                        });
-
-                        // Usar solo el primer grupo válido (primer nivel válido)
-                        if (!empty($niveles_validos)) {
-                            $primerNivel = reset($niveles_validos); // primer grupo válido
-
-                            // Consultar los campos indicados
-                            $registro = DB::table($input["tabla"])
-                                ->select($primerNivel)
-                                ->where($input["principal"], $valores->{$input["name"]})
-                                ->first();
-
-                            if ($registro) {
-                                // Concatenar los valores del registro en orden
-                                $texto = collect($primerNivel)->map(function($campo) use ($registro) {
-                                    [, $campoNombre] = explode('.', $campo, 2); // eliminar prefijo de tabla
-                                    return $registro->$campoNombre ?? '';
-                                })->implode(' ');
-
-                                $jsonDecoded["inputs"][$index]["texto_concatenado"] = trim($texto);
-                            }
-                        }
-            } 
-            // FINAL: Obtener el valor original del select2
-        }
         
     }
 
