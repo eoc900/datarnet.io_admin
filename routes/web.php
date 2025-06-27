@@ -23,6 +23,7 @@ use App\Http\Controllers\FormCreatorController;
 use App\Http\Controllers\TitulosGeneradosController;
 use App\Http\Controllers\LigasFormulariosController;
 use App\Http\Controllers\InformesController;
+use App\Http\Controllers\RespaldosController;
 
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\MailGunController;
@@ -104,6 +105,11 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::resource('/titulos_generados',TitulosGeneradosController::class);
     Route::resource('/ligas_formulario',LigasFormulariosController::class);
     Route::resource('/informes',InformesController::class);
+    Route::resource('/respaldos',RespaldosController::class);
+
+    //-----> Respaldos
+    Route::post('/respaldo-generar', [RespaldosController::class, 'generar'])->name('respaldo.generar');
+
 
 
     // ---->Sistema cobros: Ajax html

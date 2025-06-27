@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Spatie\Permission\Models\Permission;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class InformesController extends Controller
 {
@@ -448,18 +449,41 @@ class InformesController extends Controller
         ];
 
 
-        // Checamos si en los filtros hay propiedad de texto con mode
-        if(isset($jsonDecoded["filtros"]) && isset($jsonDecoded["filtros"]["text"]) && isset($jsonDecoded["filtros"]["text"]["mode"]) && $jsonDecoded["filtros"]["text"]["mode"]=="tabla_enlazada"){
+       if (
+            isset($jsonDecoded["filtros"]) &&
+            isset($jsonDecoded["filtros"]["text"]) &&
+            isset($jsonDecoded["filtros"]["text"]["mode"]) &&
+            $jsonDecoded["filtros"]["text"]["mode"] == "tabla_enlazada"
+        ) {
+            // Instancia del query sin ejecutarlo aún
+            $query = DB::table($jsonDecoded["filtros"]["text"]["tabla_enlazada"])
+                ->select(
+                    $jsonDecoded["filtros"]["text"]["valor_opcion_tabla_enlazada"] . " as value",
+                    $jsonDecoded["filtros"]["text"]["texto_opcion_tabla_enlazada"] . " as option"
+                );
 
+            // Log del SQL antes de ejecutar
+            $sql = $query->toSql(); // SQL con ? placeholders
+            $bindings = $query->getBindings();
 
-            // Preparamos valores 
-            $resultados = DB::table($jsonDecoded["filtros"]["text"]["tabla_enlazada"])->select($jsonDecoded["filtros"]["text"]["valor_opcion_tabla_enlazada"]." as value",$jsonDecoded["filtros"]["text"]["texto_opcion_tabla_enlazada"]." as option")->distinct()->get();
+            // Interpolación opcional
+            $sqlCompleto = vsprintf(str_replace('?', "'%s'", $sql), $bindings);
+
+            Log::info("SQL generado informes:", [
+                'query' => $sql,
+                'bindings' => $bindings,
+                'sql_completo' => $sqlCompleto
+            ]);
+
+            // Ahora sí ejecutamos y guardamos resultados
+            $resultados = $query->get();
+            Log::info("Resultados de la tabla enlazada:", ['resultados' => $resultados]);
+
+            // Inyectamos en el json
             $jsonDecoded["filtros"]["text"]["resultados"] = $resultados;
             $jsonDecoded["filtros"]["text"]["label"] = "Buscar por";
-        
-
-
         }
+
 
 
         // Recorremos cada sección para ejecutar su query si existe

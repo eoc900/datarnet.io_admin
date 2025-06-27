@@ -6,7 +6,7 @@
     
     // Tipo de buscador en el header
     $tipo = '';
-    $resultados_drop = ($filtros["text"]["resultados"])?$filtros["text"]["resultados"]:'';
+    $resultados_drop = $filtros["text"]["resultados"] ?? '';
 
 @endphp
 
