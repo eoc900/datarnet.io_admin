@@ -35,8 +35,12 @@ class TiposDatosSeeder extends Seeder
             'updated_at' => now()],
             ['tipo_dato' => 'Tiempo',
             'created_at' => now(),
-            'updated_at' => now()]
-           
+            'updated_at' => now(),
+            ],
+            ['tipo_dato' => 'BigEntero/Llaveforanea',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
         ]);
     }
 }

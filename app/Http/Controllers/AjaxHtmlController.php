@@ -197,6 +197,8 @@ class AjaxHtmlController extends Controller
     }
 
     public function columnasTablaModulo(Request $request){
+
+        
         $request->validate([
             "tabla"=>"string|max:64|required",
             "index"=>"nullable|integer"
@@ -210,6 +212,7 @@ class AjaxHtmlController extends Controller
             'tabla'=>$request->tabla,
             'arrastrable'=>$request->arrastrable??"",
             'only_columnas'=>(isset($request->only_columnas)?true:null),
+            'excel'=>$request->input("excel")??false,
             'index'=>$request->index??"",
             'multi_item'=>$request->input("multi_item")??false, // para poder asignar bien el name="campos[$tabla][$index][on_row]"
             'multi_item_tabla'=>$request->input("multi_item_tabla")??false,

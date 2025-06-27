@@ -50,8 +50,10 @@
         });
         }
 
-        function ajaxColumnasTabla(tabla, append_on,index=""){
-
+         const esDesdeExcel = {!! json_encode($excel ?? false) !!};
+        function ajaxColumnasTabla(tabla, append_on,index="", excel = esDesdeExcel){
+          console.log("tabla: "+tabla);
+          console.log("index: "+index);
               $.ajax({
               url: '/ajax/columnas_tabla', // Ajusta esta URL
                         method: 'POST',
@@ -59,7 +61,9 @@
                             _token:'{{csrf_token()}}', // CSRF para Laravel
                             tabla: tabla,
                             only_columnas:true,
-                            index: index
+                            index: index,
+                            excel: excel
+
                         },
                         success: function(response) {
                             console.log('encontramos las siguientes columnas:', response);

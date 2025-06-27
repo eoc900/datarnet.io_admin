@@ -185,7 +185,8 @@ class TablasModulosController extends Controller
             ],
             "tipos_datos"=>$tipos_datos,
             "tablas"=>$tablas_disponibles,
-            "id_tabla"=>$tabla->id
+            "id_tabla"=>$tabla->id,
+            "excel"=>true
         ]);
 
     }
@@ -317,18 +318,30 @@ class TablasModulosController extends Controller
 
         }
 
-        if(DB::table($tabla->nombre_tabla)->insertOrIgnore($resultados)){
-            return view("sistema_cobros.tablas_modulos.datos_insertados",[
-                "title"=>"Se pudieron insertar los datos.",
-                "tabla"=>$tabla->nombre_tabla,
-                "excel"=>$resultados]);
-        }else{
-            Log::info('No se pudo hacer el insert');
-              return view("sistema_cobros.tablas_modulos.datos_insertados",[
-                "title"=>"Error.",
-                "resultados"=>["Existente"=>"El archivo ".$tabla->nombre_tabla.".xlsx"],
-                "excel"=>$resultados]);
+        if (!empty($resultados)) {
+            if (DB::table($tabla->nombre_tabla)->insertOrIgnore($resultados)) {
+                return view("sistema_cobros.tablas_modulos.datos_insertados", [
+                    "title" => "Se pudieron insertar los datos.",
+                    "tabla" => $tabla->nombre_tabla,
+                    "excel" => $resultados
+                ]);
+            } else {
+                Log::info('No se pudo hacer el insert');
+                return view("sistema_cobros.tablas_modulos.datos_insertados", [
+                    "title" => "Error al insertar.",
+                    "resultados" => ["Existente" => "El archivo " . $tabla->nombre_tabla . ".xlsx no insertó registros."],
+                    "excel" => $resultados
+                ]);
+            }
+        } else {
+            Log::info("No se insertaron datos porque el archivo solo tiene encabezados.");
+            return view("sistema_cobros.tablas_modulos.datos_insertados", [
+                "title" => "No se insertaron datos.",
+                "resultados" => ["Vacío" => "El archivo " . $tabla->nombre_tabla . ".xlsx no contenía datos."],
+                "excel" => []
+            ]);
         }
+
         
     }
 

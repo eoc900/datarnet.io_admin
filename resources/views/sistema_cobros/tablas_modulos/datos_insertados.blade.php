@@ -4,7 +4,7 @@
 @include('components.sistema_cobros.response')  
 
 @if (!isset($show))
-    <div class="alert alert-success">La tabla {{ $tabla }} fue generada con éxito</div>
+    <div class="alert alert-success">La tabla {{ $tabla??'' }} fue generada con éxito</div>
 @endif
 
 

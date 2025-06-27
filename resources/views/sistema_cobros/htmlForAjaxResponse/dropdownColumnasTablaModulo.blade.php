@@ -12,8 +12,12 @@
                 </div>
             </div>
 @elseif (isset($only_columnas) && $only_columnas==true)
-
-            <select name="{{ (isset($multi_item))?"campos[$multi_item_tabla][$multi_item_index][on_row]":"on_row[$index]" }}" id="" class="form-control float-start">
+       
+            @if (isset($multi_item) && !$excel)
+                <select name="campos[{{ $multi_item_tabla }}][{{ $multi_item_index }}][on_row]" class="form-control">
+            @else
+                <select name="on_row[{{ $index }}]" class="form-control">
+            @endif
                 @foreach ($columnas as $columna)
                     <option value="{{ $tabla.".".$columna }}">{{ $columna }}</option>
                 @endforeach

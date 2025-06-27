@@ -30,7 +30,7 @@ class TablasModulos{
                     
                     // Convertir tipo almacenado ("varchar") a tipo para creación ("Cadena")
                     $tipoCreacion = match(strtolower($tipo)) {
-                        'bigint' => 'BigEntero',
+                        'bigint' => 'BigEntero/Llaveforanea',
                         'varchar' => 'Cadena',
                         'int' => 'Entero',
                         'boolean' => 'Booleano',
@@ -50,6 +50,7 @@ class TablasModulos{
                         "Fecha/Tiempo" => $table->datetime($columna),
                         "Fecha" => $table->date($columna),
                         "Tiempo" => $table->time($columna),
+                        "BigEntero/Llaveforanea"=>$table->unsignedBigInteger($columna),
                         default => $table->string($columna)
                     };
 

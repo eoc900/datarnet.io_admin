@@ -16,7 +16,7 @@ return new class extends Migration
            // $table->string("id_columna",32);
             $table->string("nombre_columna",62);
             $table->foreignId("id_tabla");
-            $table->string("tipo_dato",16);
+            $table->string("tipo_dato",32);
             $table->unsignedTinyInteger("qty_caracteres")->nullable();
             $table->boolean("es_llave_primaria")->default(0);
             $table->boolean("es_foranea")->default(0);
