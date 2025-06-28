@@ -124,7 +124,7 @@ class RespaldosController extends Controller
         $estructura = DB::select("SHOW CREATE TABLE `$tabla`")[0]->{'Create Table'};
         $datos = DB::table($tabla)->get();
 
-        $sql = "-- Estructura\n$estructura;\n\n-- Datos\n";
+        $sql = $estructura . ";\n\n";
 
         foreach ($datos as $fila) {
             $columnas = array_map(fn($v) => "`$v`", array_keys((array) $fila));

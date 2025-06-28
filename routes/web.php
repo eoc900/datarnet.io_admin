@@ -24,6 +24,7 @@ use App\Http\Controllers\TitulosGeneradosController;
 use App\Http\Controllers\LigasFormulariosController;
 use App\Http\Controllers\InformesController;
 use App\Http\Controllers\RespaldosController;
+use App\Http\Controllers\InstaladorController;
 
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\MailGunController;
@@ -109,6 +110,11 @@ Route::middleware(['auth','verified'])->group(function () {
 
     //-----> Respaldos
     Route::post('/respaldo-generar', [RespaldosController::class, 'generar'])->name('respaldo.generar');
+    //-----> Instalador
+    Route::get('/instalador/cargar-sql', [InstaladorController::class, 'formularioSQL'])->name('instalador.sql.form');
+    Route::post('/instalador/cargar-sql', [InstaladorController::class, 'importarSQL'])->name('instalador.sql.importar');
+
+
 
 
 
