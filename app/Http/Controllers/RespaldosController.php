@@ -105,7 +105,7 @@ class RespaldosController extends Controller
         'form_creator', 'informes', 'tablas_modulos', 'tipos_datos',
         'ligas_formularios', 'columnas_tablas', 'archivos',
         'model_has_permissions', 'model_has_roles', 'role_has_permissions',
-        'roles', 'permissions'
+        'roles', 'permissions','users'
     ];
 
     $todasLasTablas = DB::select('SHOW TABLES');
