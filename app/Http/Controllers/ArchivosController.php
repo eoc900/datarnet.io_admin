@@ -193,7 +193,7 @@ class ArchivosController extends Controller
             'informe' => 'informes'
         ];
 
-        return response()->json(["ruta"=>$tipo]);
+
         // Verificamos que el tipo sea válido
         if (!array_key_exists($tipo, $rutas)) {
             abort(404, "Tipo de archivo no válido");
