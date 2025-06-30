@@ -240,6 +240,7 @@ class ArchivosController extends Controller
             'formulario' => 'formularios',
             'query' => 'queries',
             'dashboard' => 'dashboards',
+            'informe'=>'informes'
         ];
 
         // Verificamos que el tipo sea válido
