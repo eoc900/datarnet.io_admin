@@ -204,7 +204,7 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::get('/descargar_configuracion/{tipo}/{nombreArchivo}',[ArchivosController::class,"descargarConfiguracion"])->name("descargar.configuracion");
     // Edición de archivos
     Route::get('/editar_archivo/{tipo}/{nombreArchivo}', [ArchivosController::class, 'vistaModificarArchivo'])
-    ->where('tipo', 'formulario|query|dashboard') // validación por tipo
+    ->where('tipo', 'formulario|query|dashboard|informe') // validación por tipo
     ->name('vista.editar.archivo');
     Route::post('/actualizar_archivo',[ArchivosController::class,'modificarArchivo'])->name("actualizar.archivo");
     Route::post('/carga_configuracion', [ArchivosController::class, 'cargaConfiguracion'])->name('carga.configuracion');
