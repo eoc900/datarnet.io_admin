@@ -33,6 +33,8 @@
     <script>
       $(document).ready(function(){
 
+      @stack('form_creator_top_section')
+
       @include('sistema_cobros.form_creator.scripts.funciones.validaciones')
 
       function ajaxSeleccionInputType(){ 
@@ -1359,45 +1361,7 @@
         })
       }
 
-      function select2TablaModulo(){
-         $('#buscar_tablas').select2({
-                placeholder: 'Selecciona una tabla',    
-                 width: '100%',       
-                ajax:{
-                    type: "post",
-                    dataType: "json",
-                    url: "/select2/tablas_modulos",
-                    data: function (params) {
-                        var query = {
-                            search: params.term,
-                            _token: '{{csrf_token()}}',
-                            type: 'public'
-                        }
-
-                        // Query parameters will be ?search=[term]&type=public
-                        return query;
-                    },
-                    processResults: function (data) {
-                        // Transforms the top-level key of the response object from 'items' to 'results'
-                        console.log(data);
-                            return {
-                                    results: $.map(data.results, function (item) {
-                                        return {
-                                            text: "Tabla: "+item.text,
-                                            id: item.id                                          
-                                        }
-                                    })
-                            }
-                    }
-                }
-        });
-        $('#buscar_tablas').on('select2:select', function (e) {
-          console.log("Usuario seleccionado");
-          console.log(e.params.data.id);
-          // Cuando seleccionas una tabla se tiene que esconder la sección de configuración
-          ajaxRenderizarCampos(e.params.data.id);
-        });
-      }
+      
 
       function select2TablaModuloEnlazarCheckbox(select2Obj){
         $(select2Obj).select2({
@@ -1450,17 +1414,7 @@
                       eventoClickAgregarCampo();
                   }
           });
-      }
-
-      function eventoEnlazarTabla(){
-        $('#enlazarTabla').change(function() {
-            if ($(this).is(':checked')) {
-                $(".contenedor_enlazar_tabla").removeClass('d-none'); // Remover clase si está desmarcado        
-            } else {
-                $(".contenedor_enlazar_tabla").addClass('d-none'); // Agregar clase si está marcado
-            }
-        });
-      }
+      }      
 
       function eventoEnlazarCheckbox(){
         $('.enlazar-checkbox-btn').off();

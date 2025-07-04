@@ -1,7 +1,7 @@
 @extends('sistema_cobros.form_creator.layouts.show')
 @section("content")
  
-@if(auth::user()->can($permiso) || auth::user()->hasRole(["Administrador tecnológico","Owner"]))
+@if(Auth::user()->can($permiso) || Auth::user()->hasRole(["Administrador tecnológico","Owner"]))
     
 
 @include('components.sistema_cobros.response')

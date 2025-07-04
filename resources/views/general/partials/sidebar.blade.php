@@ -29,7 +29,7 @@
                 </div>
                 <div class="menu-title">Base datos</div>
             </a>
-            <ul class="mm-collapse" style="">
+            <ul class="mm-collapse mm-show" style="">
               @if(auth()->user()->can('Generar tablas'))
               <li><a href="/crear_archivo" class="fs-6"><i class="lni lni-circle-plus"></i> Generar tabla</a></li> 
               @endif

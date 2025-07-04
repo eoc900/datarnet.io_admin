@@ -11,7 +11,7 @@
 @endphp
 
 
-@if(auth::user()->can($permiso) || auth::user()->hasRole(["Administrador tecnológico","Owner"]))
+@if(Auth::user()->can($permiso) || Auth::user()->hasRole(["Administrador tecnológico","Owner"]))
 <div class="card">
     <div class="card-header pt-3">
         <h5>{{ $titulo ?? '' }}</h5>
