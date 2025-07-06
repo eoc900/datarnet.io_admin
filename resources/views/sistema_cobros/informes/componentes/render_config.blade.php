@@ -1,0 +1,27 @@
+@if(isset($tipo))
+    @switch($tipo)
+        @case("tabla")
+            @include('sistema_cobros.informes.componentes.seccion_tabla_config',["index"=>$index,"valor_col"=>$col,'id'=>$id])
+        @break
+        @case("tarjeta")
+            @include('sistema_cobros.informes.componentes.seccion_tarjeta_config',["index"=>$index,"valor_col"=>$col,'id'=>$id])
+        @break
+        @case("texto_sm")
+            @include('sistema_cobros.informes.componentes.seccion_texto_config',["index"=>$index,"valor_col"=>$col,'id'=>$id])
+        @break
+        @case("texto_md")
+            @include('sistema_cobros.informes.componentes.seccion_texto_config',["index"=>$index,"valor_col"=>$col,'id'=>$id])
+        @break
+        @case("texto_lg")
+            @include('sistema_cobros.informes.componentes.seccion_texto_config',["index"=>$index,"valor_col"=>$col,'id'=>$id])
+        @break
+        @case("grafica")
+            @include('sistema_cobros.informes.componentes.seccion_grafica_config',["index"=>$index,"valor_col"=>$col,'id'=>$id])
+        @break
+        @case("espacio")
+            @include('sistema_cobros.informes.componentes.seccion_espacio',["index"=>$index,"valor_col"=>$col,'id'=>$id])
+        @break
+    
+        @default
+    @endswitch
+@endif
