@@ -17,7 +17,7 @@
             <div class="row">
               <div class="col-md-4">
                 <label>Nombre del parámetro</label>
-                <input type="text" class="form-control" name="parametros_url[__INDEX__][nombre]" required>
+                <input type="text" class="form-control" name="parametros_url[__INDEX__][nombre]">
               </div>
               <div class="col-md-4">
                 <label>Tipo de dato</label>

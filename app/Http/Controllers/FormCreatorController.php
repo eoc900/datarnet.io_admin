@@ -980,6 +980,16 @@ class FormCreatorController extends Controller
         $tabla = $json["tabla"];
 
         $query = DB::table($tabla);
+        // Aplicar joins si hay más de una tabla
+        if (!empty($json["joins"])) {
+            foreach ($json["joins"] as $join) {
+                $tablaJoin = $join["tabla"];
+                $onPrincipal = $join["on_principal"];
+                $onSecundaria = $join["on_secundaria"];
+                $query->join($tablaJoin, $onPrincipal, '=', $onSecundaria);
+            }
+        }
+
 
         $select = [];
 
@@ -998,6 +1008,7 @@ class FormCreatorController extends Controller
             $query->select($select);
         }
 
+        $firstCondition = true;
         // Procesar concatenaciones
         if (!empty($json["campos_concatenados"])) {
             // $arr_concatenados = explode(",", $json["campos_concatenados"]);
@@ -1014,7 +1025,7 @@ class FormCreatorController extends Controller
                 }
             }
 
-            $firstCondition = true;
+
 
             foreach ($concatenaciones as $columns) {
                 $concatStr = "CONCAT(" . implode(", ' ', ", $columns) . ")";
@@ -1050,106 +1061,106 @@ class FormCreatorController extends Controller
             "nombre_documento" => "required|string|max:82"
         ]);
 
-        //1. Obtener la estructura del formulario
+        // 1. Obtener la estructura del formulario
         $nombre_documento = $request->nombre_documento;
-        // Asegurar que termina en ".json"
         if (!Str::endsWith($nombre_documento, '.json')) {
             $nombre_documento .= '.json';
         }
+
         $data = Storage::disk('local')->get('formularios/' . $nombre_documento);
         $jsonDecoded = json_decode($data, true);
-
-        $inputOriginal = $request->input("input");
         $estructura = $jsonDecoded["inputs"];
 
-        // Detectar la tabla padre (primer clave)
+        $inputOriginal = $request->input("input");
         $tablaPadre = array_key_first($inputOriginal);
-        $datosPadre = $inputOriginal[$tablaPadre][0]; // asumimos 1 registro padre
 
-        // Agregar timestamps a tabla padre
-        $datosPadre['created_at'] = Carbon::now();
-        $datosPadre['updated_at'] = Carbon::now();
+        $idsInsertados = []; // para relacionar con hijos si se necesita
 
+        // 2. Recorrer cada registro padre
+        foreach ($inputOriginal[$tablaPadre] as $index => $datosPadre) {
+            // Agregar timestamps
+            $datosPadre['created_at'] = Carbon::now();
+            $datosPadre['updated_at'] = Carbon::now();
 
-        foreach ($estructura as $campo) {
-            if ($campo['type'] === 'file') {
-                $nombreCampo = $campo['name'];
-                $pathCampo = "input.$tablaPadre.0.$nombreCampo";
+            // 3. Procesar campos tipo file si existen
+            foreach ($estructura as $campo) {
+                if ($campo['type'] === 'file') {
+                    $nombreCampo = $campo['name'];
+                    $pathCampo = "input.$tablaPadre.$index.$nombreCampo";
 
-                if ($request->hasFile($pathCampo)) {
-                    $archivo = $request->file($pathCampo);
+                    if ($request->hasFile($pathCampo)) {
+                        $archivo = $request->file($pathCampo);
 
-                    // Extraer info desde el JSON
-                    $directorio = isset($campo['directorio']) ? 'archivos_formularios/' . trim($campo['directorio'], "/") : "archivos_formularios";
-                    $formatosPermitidos = isset($campo['formatos']) ? explode(',', str_replace(' ', '', $campo['formatos'])) : [];
-                    $tamanoMaximoMB = isset($campo['file_size']) ? (int)$campo['file_size'] : 5;
+                        $directorio = isset($campo['directorio']) ? 'archivos_formularios/' . trim($campo['directorio'], "/") : "archivos_formularios";
+                        $formatosPermitidos = isset($campo['formatos']) ? explode(',', str_replace(' ', '', $campo['formatos'])) : [];
+                        $tamanoMaximoMB = isset($campo['file_size']) ? (int)$campo['file_size'] : 5;
 
-                    // Validar tamaño máximo (en bytes)
-                    if ($archivo->getSize() > $tamanoMaximoMB * 1024 * 1024) {
-                        return back()->withErrors(["El archivo '$nombreCampo' excede el tamaño máximo permitido."]);
-                    }
-
-                    // Validar tipo MIME si hay formatos definidos
-                    $extensionArchivo = "." . $archivo->getClientOriginalExtension();
-                    if (!empty($formatosPermitidos) && !in_array(strtolower($extensionArchivo), array_map('strtolower', $formatosPermitidos))) {
-                        return back()->withErrors(["El archivo '$nombreCampo' no tiene un formato permitido."]);
-                    }
-
-                    // Nombre único y almacenamiento
-                    $nombreFinal = uniqid() . "_" . Str::slug(pathinfo($archivo->getClientOriginalName(), PATHINFO_FILENAME)) . "." . $archivo->getClientOriginalExtension();
-                    $rutaFinal = $archivo->storeAs($directorio, $nombreFinal);
-
-                    foreach (['directorio', 'formatos', 'file_size', 'validacion'] as $aux) {
-                        if (isset($datosPadre[$aux])) {
-                            unset($datosPadre[$aux]);
+                        if ($archivo->getSize() > $tamanoMaximoMB * 1024 * 1024) {
+                            return back()->withErrors(["El archivo '$nombreCampo' excede el tamaño máximo permitido."]);
                         }
-                    }
 
-                    $datosPadre[$nombreCampo] = $rutaFinal; // Guarda ruta con carpeta
-                } else {
-                    $datosPadre[$nombreCampo] = null;
+                        $extensionArchivo = "." . $archivo->getClientOriginalExtension();
+                        if (!empty($formatosPermitidos) && !in_array(strtolower($extensionArchivo), array_map('strtolower', $formatosPermitidos))) {
+                            return back()->withErrors(["El archivo '$nombreCampo' no tiene un formato permitido."]);
+                        }
+
+                        $nombreFinal = uniqid() . "_" . Str::slug(pathinfo($archivo->getClientOriginalName(), PATHINFO_FILENAME)) . "." . $archivo->getClientOriginalExtension();
+                        $rutaFinal = $archivo->storeAs($directorio, $nombreFinal);
+
+                        foreach (['directorio', 'formatos', 'file_size', 'validacion'] as $aux) {
+                            if (isset($datosPadre[$aux])) {
+                                unset($datosPadre[$aux]);
+                            }
+                        }
+
+                        $datosPadre[$nombreCampo] = $rutaFinal;
+                    } else {
+                        $datosPadre[$nombreCampo] = null;
+                    }
                 }
             }
+
+            // 4. Insertar registro padre y guardar ID
+            $insertedId = DB::table($tablaPadre)->insertGetId($datosPadre);
+            $idsInsertados[$index] = $insertedId;
         }
 
-
-        // Insertar y obtener ID del registro padre
-        $insertedId = DB::table($tablaPadre)->insertGetId($datosPadre);
-
-        // Buscar qué campo se va a usar como llave foránea
-        $campoLlave = 'id'; // por defecto
+        // 5. Buscar campo llave (por si hay hijos multi-item)
+        $campoLlave = 'id';
         foreach ($estructura as $campo) {
             if (isset($campo['llave_foranea']) && $campo['type'] !== 'multi-item') {
                 $campoLlave = $campo['name'];
             }
         }
 
-        $valorLlaveForanea = $datosPadre[$campoLlave] ?? $insertedId;
-
-        // Insertar registros de tablas hijas
+        // 6. Insertar registros multi-item si existen
         foreach ($estructura as $campo) {
             if ($campo["type"] === "multi-item") {
                 $tablaHija = $campo["tabla_hija"];
 
                 foreach ($inputOriginal[$tablaHija] ?? [] as $registro) {
-                    foreach ($registro as $key => $val) {
-                        // Reemplazar si el valor es igual a la referencia de la llave
+                    $registroProcesado = $registro;
+
+                    foreach ($registroProcesado as $key => $val) {
+                        // Reemplazar si el valor indica referencia
                         if ($val === "{$tablaPadre}_{$campoLlave}") {
-                            $registro[$key] = $valorLlaveForanea;
+                            // Suponemos que se usa 'indice_padre' para saber con cuál padre relacionarlo
+                            $indicePadre = $registro['indice_padre'] ?? 0;
+                            $registroProcesado[$key] = $idsInsertados[$indicePadre] ?? null;
                         }
                     }
 
-                    // Agregar timestamps a tabla hija
-                    $registro['created_at'] = Carbon::now();
-                    $registro['updated_at'] = Carbon::now();
+                    $registroProcesado['created_at'] = Carbon::now();
+                    $registroProcesado['updated_at'] = Carbon::now();
 
-                    DB::table($tablaHija)->insert($registro);
+                    DB::table($tablaHija)->insert($registroProcesado);
                 }
             }
         }
 
         return back()->with("success", "¡Se insertaron los registros correctamente!");
     }
+
 
 
 

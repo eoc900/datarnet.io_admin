@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 class ArtificialIntelligenceController extends Controller
 {
 
+
     public function iniciarTablasJson(Request $request)
     {
 

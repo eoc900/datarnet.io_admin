@@ -56,9 +56,17 @@
         @foreach ($secciones as $seccion)
             @switch($seccion["tipo"])
                 @case("tabla")
-                    @include('sistema_cobros.informes.componentes.show.tabla_dinamica',[
-                        "registros"=>$seccion["resultados"],
-                        'seccion' => $seccion])
+                    @if(isset($seccion["query"]["raw_sql"]))
+                    @include('sistema_cobros.informes.componentes.show.tabla_sql', [
+                        "registros" => $seccion["resultados"],
+                        "seccion" => $seccion
+                    ])
+    @else
+        @include('sistema_cobros.informes.componentes.show.tabla_dinamica', [
+            "registros" => $seccion["resultados"],
+            "seccion" => $seccion
+        ])
+    @endif
                 @break
                 @case("tarjeta")
                     @include('sistema_cobros.informes.componentes.show.tarjeta_dinamica',[
@@ -67,10 +75,17 @@
                         'seccion' => $seccion])
                 @break
                 @case("grafica")
-                @include('sistema_cobros.informes.componentes.show.grafica_dinamica', [
-                    'seccion' => $seccion
-                ])
 
+                    @if(isset($seccion["query"]["raw_sql"]))
+                        @include('sistema_cobros.informes.componentes.show.grafica_multiples_series', [
+                                'seccion' => $seccion
+                        ])
+                    @else
+                        @include('sistema_cobros.informes.componentes.show.grafica_dinamica', [
+                                'seccion' => $seccion
+                        ])
+                    @endif
+                    
                 @break
             @default
             @endswitch

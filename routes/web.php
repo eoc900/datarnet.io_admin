@@ -20,6 +20,8 @@ use App\Http\Controllers\InstaladorController;
 use App\Http\Controllers\InstaladorJsonController;
 use App\Http\Controllers\ArtificialIntelligenceController;
 
+use App\Http\Controllers\IAGeneratorController;
+
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\Select2Controller;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +92,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/instalador/cargar-sql', [InstaladorController::class, 'formularioSQL'])->name('instalador.sql.form');
 
 
+    // SQL Instalación de tablas
     Route::get('/instalador/cargar-sql', [InstaladorController::class, 'formularioSQL'])->name('instalador.sql.form');
     Route::post('/instalador/cargar-sql', [InstaladorController::class, 'importarSQL'])->name('instalador.sql.importar');
     Route::get('/instalador/json', [InstaladorJsonController::class, 'formulario'])->name('instalador.json.formulario');
@@ -174,6 +177,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     //Artificial intelligence module
+    Route::get('/asistente_experto_db', [IAGeneratorController::class, 'asistenteExpertoDB'])->name("asistente_experto_db");
+    Route::get('/carga_directa_db', [IAGeneratorController::class, 'cargarTablasDB'])->name("cargar_db");
+    Route::post('/generar-estructura', [IAGeneratorController::class, 'generar'])->name('ia.generar');
+    Route::post('/complementar-estructura', [IAGeneratorController::class, 'complementar'])->name('ia.complementar');
+    Route::post('/ia/aprobar', [IAGeneratorController::class, 'aprobarF1'])->name('ia.aprobar');
+
+
     Route::get('/ai/conf/iniciar', [ArtificialIntelligenceController::class, 'iniciarTablasJson'])->name('ai.configuracion.iniciar');
     Route::post('/ai/conf/guardar', [ArtificialIntelligenceController::class, 'guardarTablasJson'])->name('ai.configuracion.guardar');
 

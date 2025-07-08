@@ -40,6 +40,51 @@
         agregarElemento();
         eventoClickSeccion();
         activarEventoEliminarSeccion();
+        toggleSQLMode();
+      
+        {{-- Relacionado a queries crudos --}}
+        document.getElementById("toggleRawSQL").addEventListener("change", function () {
+            toggleSQLMode()
+            const $seriesContainer = $("#series-container");
+
+            // ➕ Agregar nueva serie
+            $("#add-serie").on("click", function () {
+                const nuevaSerie = $(`
+                    <div class="input-group mb-2">
+                        <input type="text" name="configuracion_grafica[series][]" class="form-control" placeholder="Ej. costo_total_unitario">
+                        <button class="btn btn-danger btn-sm remove-serie" type="button">🗑</button>
+                    </div>
+                `);
+                $seriesContainer.append(nuevaSerie);
+                actualizarBotonesEliminar();
+            });
+
+            // 🗑 Eliminar serie (delegado)
+            $seriesContainer.on("click", ".remove-serie", function () {
+                if ($seriesContainer.find(".input-group").length > 1) {
+                    $(this).closest(".input-group").remove();
+                    actualizarBotonesEliminar();
+                }
+            });
+            actualizarBotonesEliminar();
+        });
+        
+
+            function actualizarBotonesEliminar() {
+                const $grupos = $seriesContainer.find(".input-group");
+                const $botones = $seriesContainer.find(".remove-serie");
+
+                if ($grupos.length > 1) {
+                    $botones.removeClass("d-none");
+                } else {
+                    $botones.addClass("d-none");
+                }
+            }
+
+            // Ejecutar al inicio por si ya hay series cargadas
+   
+        {{-- Relacionado a queries crudos --}}
+    
 
 
         function insertarElemento(){
