@@ -39,6 +39,7 @@
 
 @endphp
 
+
 <div class="col-md-{{ $seccion["col"] }}">
 <div class="card bg-light shadow">
     <div class="card-header pt-3">

@@ -86,7 +86,7 @@
                       <option value="bar" @selected(($elemento['grafica']['tipo'] ?? '') === 'bar')>Barras</option>
                       <option value="line" @selected(($elemento['grafica']['tipo'] ?? '') === 'line')>Línea</option>
                       <option value="pie" @selected(($elemento['grafica']['tipo'] ?? '') === 'pie')>Pastel</option>
-                      <option value="doughnut" @selected(($elemento['grafica']['tipo'] ?? '') === 'doughnut')>Dona</option>
+                      <option value="donut" @selected(($elemento['grafica']['tipo'] ?? '') === 'donut')>Dona</option>
                   </select>
               </div>
 
@@ -96,6 +96,13 @@
                         value="{{ $elemento['grafica']['label_columna'] ?? '' }}"
                         placeholder="Ej. nombre_vehiculo, fecha, etc.">
               </div>
+              <div class="mb-3">
+                    <label class="form-label">Columna para series dinámicas (agrupación interna)</label>
+                    <input type="text" name="configuracion_grafica[columna_series_dinamicas]" class="form-control"
+                        value="{{ $elemento['grafica']['columna_series_dinamicas'] ?? '' }}"
+                        placeholder="Ej. estatus_venta, categoria, etc.">
+                </div>
+
 
               <div class="mb-3">
                   <label class="form-label">Series (columnas para valores)</label>

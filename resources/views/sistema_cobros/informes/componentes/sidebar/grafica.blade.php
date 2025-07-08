@@ -6,7 +6,7 @@
         <option value="bar" @selected(($elemento['grafica']['tipo'] ?? '') === 'bar')>Barras</option>
         <option value="line" @selected(($elemento['grafica']['tipo'] ?? '') === 'line')>Línea</option>
         <option value="pie" @selected(($elemento['grafica']['tipo'] ?? '') === 'pie')>Pastel</option>
-        <option value="doughnut" @selected(($elemento['grafica']['tipo'] ?? '') === 'doughnut')>Dona</option>
+        <option value="donut" @selected(($elemento['grafica']['tipo'] ?? '') === 'donut')>Dona</option>
     </select>
     <button type="button" class="btn btn-outline-primary mt-2" id="configurar_grafica">Seleccionar parámetros</button>
 </div>
