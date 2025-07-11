@@ -1385,6 +1385,7 @@
                     },
                     processResults: function (data) {
                         // Transforms the top-level key of the response object from 'items' to 'results'
+                        console.log("valores del select2");
                         console.log(data);
                             return {
                                     results: $.map(data.results, function (item) {

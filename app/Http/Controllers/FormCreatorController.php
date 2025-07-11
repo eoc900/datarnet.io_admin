@@ -132,7 +132,8 @@ class FormCreatorController extends Controller
         $tipo = $request->input('crear'); // 'formulario' o 'informe'
         $nombre = $request->input('nombre_formulario');
 
-        $permiso = '';
+        // BLOQUE PERMISOS DE FORMULARIO
+        $permiso = 'Ver formularios';
         if (!empty($usuarios)) {
             $permiso = 'ver ' . $tipo . ' ' . Str::slug($nombre, ' ');
             Permission::firstOrCreate(['name' => $permiso]);
@@ -144,6 +145,21 @@ class FormCreatorController extends Controller
                 }
             }
         }
+        //BLOQUE PERMISOS DE FORMULARIO
+
+        //BLOQUE DE PARAMETROS URL
+        $parametros = collect($request->input("parametros") ?? [])
+            ->map(function ($param) {
+                return [
+                    "nombre" => $param['nombre'] ?? null,
+                    "tipo" => $param['tipo'] ?? 'string',
+                    "requerido" => isset($param['requerido']) ? true : false,
+                ];
+        })->toArray();
+        //BLOQUE DE PARAMETROS URL
+
+
+
 
 
 
@@ -192,7 +208,8 @@ class FormCreatorController extends Controller
             "creadoPor" => $form->creadoPor,
             "inputs" => $inputs,
             "ruta_banner" => $ruta ?? null,
-            "permiso" => $permiso
+            "permiso" => $permiso,
+            "parametros"=>$parametros
         ];
 
 
@@ -273,8 +290,23 @@ class FormCreatorController extends Controller
 
             // Queries para campos de checkbox
             if ($input["type"] == "checkbox" && $input["enlazado"] == "true") {
-                $valores = DB::table($input["tabla"])->pluck($input["valores_tabla"])->toArray();
-                $textos = DB::table($input["tabla"])->pluck($input["textos_tabla"])->toArray();
+                $tabla = $input["tabla"];
+                $columnaValores = $input["valores_tabla"];
+                $textosTabla = $input["textos_tabla"];
+
+                // Obtener valores (id, clave, etc.)
+                $valores = DB::table($tabla)->pluck($columnaValores)->toArray();
+
+                // Obtener textos concatenados si es arreglo
+                if (is_array($textosTabla)) {
+                    // Concatena con espacios: CONCAT_WS(' ', campo1, campo2, ...)
+                    $select = DB::raw("CONCAT_WS(' ', " . implode(', ', $textosTabla) . ") AS texto");
+
+                    $textos = DB::table($tabla)->select($select)->pluck('texto')->toArray();
+                } else {
+                    // Texto simple
+                    $textos = DB::table($tabla)->pluck($textosTabla)->toArray();
+                }
                 $jsonDecoded["inputs"][$index]["resultados_valores"] = $valores;
                 $jsonDecoded["inputs"][$index]["resultados_textos"] = $textos;
             }

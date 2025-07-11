@@ -34,6 +34,8 @@
     @stack("listado-filtros")
     {{-- FILTROS --}}
    
+     @stack('funciones_modal_parametros')
+     @stack('jquery')
 
     <script>
         $(document).ready(function(){

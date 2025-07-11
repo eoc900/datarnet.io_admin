@@ -16,7 +16,7 @@
         <label class="form-label" for="">{{ $campo["label"] }}</label>
             @foreach ($campo["resultados_valores"] as $index=>$valor)
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="{{ $valor }}" name="{{ $name }}[]" {{ (isset($campo["value"]) && in_array($valor,$value))?'checked':'' }}>
+                    <input class="form-check-input" type="checkbox" value="{{ $valor }}" name="{{ $campo["name"] }}[]" {{ (isset($campo["value"]) && in_array($valor,$value))?'checked':'' }}>
                     <label class="form-check-label" >{{ $campo["resultados_textos"][$index] }}</label>
                 </div>
             @endforeach

@@ -88,10 +88,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //-----> Respaldos
     Route::post('/respaldo-generar', [RespaldosController::class, 'generar'])->name('respaldo.generar');
-    //-----> Instalador
-    Route::get('/instalador/cargar-sql', [InstaladorController::class, 'formularioSQL'])->name('instalador.sql.form');
-
-
     // SQL Instalación de tablas
     Route::get('/instalador/cargar-sql', [InstaladorController::class, 'formularioSQL'])->name('instalador.sql.form');
     Route::post('/instalador/cargar-sql', [InstaladorController::class, 'importarSQL'])->name('instalador.sql.importar');
@@ -204,6 +200,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     //Informes
+    Route::post('/ajax_informe_select2',[InformesController::class, 'ajaxSelect2'])->name("ajax.informe.select2");
     Route::post('/actualizar_seccion_informe', [InformesController::class, 'actualizarSeccionInforme'])->name("actualizar.seccion");
     Route::post('/autoguardado/creador_informes', [InformesController::class, 'autoguardadoParcial'])->name("autoguardado_seccion.creador_informe");
 

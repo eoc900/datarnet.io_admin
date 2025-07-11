@@ -12,7 +12,7 @@
         <div class="form-check form-switch">
             <input class="form-check-input enlazar-checkbox-btn" type="checkbox" id="">
             <label class="form-check-label" for="">Enlazar valores de alguna tabla (por ejemplo materias)</label>
-            <input type="hidden" name="" class="checkbox-enlazado" value="false">
+            <input type="hidden" name="checkbox-enlazado" class="checkbox-enlazado" value="false">
         </div>
         
     </div>

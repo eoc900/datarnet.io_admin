@@ -17,6 +17,7 @@ use Spatie\Permission\Models\Permission;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
+
 class InformesController extends Controller
 {
     /**
@@ -477,7 +478,7 @@ class InformesController extends Controller
             isset($jsonDecoded["filtros"]["text"]) &&
             isset($jsonDecoded["filtros"]["text"]["mode"]) &&
             $jsonDecoded["filtros"]["text"]["mode"] == "tabla_enlazada"
-        ) {
+        ){
             // Instancia del query sin ejecutarlo aún
             $query = DB::table($jsonDecoded["filtros"]["text"]["tabla_enlazada"])
                 ->select(
@@ -506,32 +507,168 @@ class InformesController extends Controller
             $jsonDecoded["filtros"]["text"]["resultados"] = $resultados;
             $jsonDecoded["filtros"]["text"]["label"] = "Buscar por";
         }
+
+        if (isset($jsonDecoded["filtros"]["personalizado"]) && count($jsonDecoded["filtros"]["personalizado"]) > 0) {
+            foreach ($jsonDecoded["filtros"]["personalizado"] as $index => $filtro) {
+                // 🎯 1. Si es tipo DROPDOWN (consulta directa de valores)
+                if (!empty($filtro["query"]) && !empty($filtro["texto_opciones"]) && !empty($filtro["valores_opciones"]) && $filtro["tipo"] === "dropdown") {
+                    try {
+                        $resultados = DB::select($filtro["query"]);
+
+                        $resultados_texto = [];
+                        $resultados_valores = [];
+
+                        foreach ($resultados as $fila) {
+                            $fila = (array)$fila;
+                            $resultados_texto[] = $fila[$filtro["texto_opciones"]] ?? null;
+                            $resultados_valores[] = $fila[$filtro["valores_opciones"]] ?? null;
+                        }
+
+                        $jsonDecoded["filtros"]["personalizado"][$index]["resultados_texto"] = $resultados_texto;
+                        $jsonDecoded["filtros"]["personalizado"][$index]["resultados_valores"] = $resultados_valores;
+                    } catch (\Exception $e) {
+                        $jsonDecoded["filtros"]["personalizado"][$index]["error"] = $e->getMessage();
+                    }
+                }
+
+                // 🎯 2. En ambos casos (dropdown o select2): detectar si viene parámetro URL y precargar
+                if (isset($filtro["url_param"]) && $request->has($filtro["url_param"])) {
+                    $valorSeleccionado = $request->get($filtro["url_param"]);
+                    $jsonDecoded["filtros"]["personalizado"][$index]["seleccionado"] = $valorSeleccionado;
+
+                    // Sólo para select2: intentar obtener texto si está definido
+                    if ($filtro["tipo"] === "select2" && isset($filtro["query"], $filtro["retornar"])) {
+                        try {
+                            // Reemplazamos LIKE :search por WHERE 1
+                            $queryBase = preg_replace('/WHERE\s+.*?LIKE\s+:search/i', 'WHERE 1', $filtro["query"]);
+                            $sql = "SELECT * FROM ({$queryBase}) AS sub WHERE id = ?";
+                            $resultado = DB::selectOne($sql, [$valorSeleccionado]);
+
+                            if ($resultado) {
+                                $resultado = (array) $resultado;
+                                $texto = implode(' ', array_map(fn($col) => $resultado[$col] ?? '', $filtro["retornar"]));
+                                $jsonDecoded["filtros"]["personalizado"][$index]["seleccionado_texto"] = trim($texto);
+                            }
+                        } catch (\Exception $e) {
+                            Log::error("Error al obtener texto del select2:", [
+                                'error' => $e->getMessage(),
+                                'id' => $valorSeleccionado,
+                                'query' => $filtro['query']
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        //Ejecutar queries para filtros
+
+
+        // Captura todos los filtros de la URL
+        
+        $filtros = $request->all(); 
+        // Establecer fechas por default si no se pasaron
+        if (!array_key_exists('fecha-inicio', $filtros) || empty($filtros['fecha-inicio'])) {
+            $filtros['fecha-inicio'] = Carbon::now()->startOfMonth()->toDateString();
+        }
+
+        if (!array_key_exists('fecha-finaliza', $filtros) || empty($filtros['fecha-finaliza'])) {
+            $filtros['fecha-finaliza'] = Carbon::now()->endOfMonth()->toDateString();
+        }
         // Recorremos cada sección para ejecutar su query si existe
         foreach ($jsonDecoded["secciones"] as $index => $seccion) {
             $resultados = collect();
 
-            if (isset($seccion['query'])) {
-                if (!empty($seccion['query']['raw_sql'])) {
-                    try {
-                        $sql = $seccion['query']['raw_sql'];
-                        $resultados = collect(DB::select($sql));
-                    } catch (\Exception $e) {
-                        Log::error("Error al ejecutar SQL crudo:", [
-                            'error' => $e->getMessage(),
-                            'sql' => $sql
-                        ]);
-                        $resultados = collect();
-                    }
-                } else {
-                    $resultados = collect(Informes::ejecutarConsulta($seccion['query'], $filtros));
+           
+            if (isset($seccion['query']) && !empty($seccion['query']['raw_sql'])) {
+                try {
+                    $sqlOriginal = $seccion['query']['raw_sql'];
+                    $sqlProcesado = $this->reemplazarParametrosSQL($sqlOriginal, $filtros);
+                    Log::info("SQL ejecutado en informe:", [
+                        'sql' => $sqlProcesado,
+                        'filtros' => $filtros
+                    ]);
+                    $resultados = collect(DB::select($sqlProcesado));
+                } catch (\Exception $e) {
+                    Log::error("Error al ejecutar SQL crudo:", [
+                        'error' => $e->getMessage(),
+                        'sql' => $sqlProcesado ?? $sqlOriginal
+                    ]);
+                    $resultados = collect();
                 }
+            } else {
+                $resultados = collect(Informes::ejecutarConsulta($seccion['query'], $filtros));
             }
 
             $seccion["resultados"] = $resultados;
             $jsonDecoded["secciones"][$index] = $seccion;
+
         }
+        // Recorremos cada sección para ejecutar su query si existe
+
         return view("sistema_cobros.informes.show", $jsonDecoded);
     }
+    // Complemento de show()
+   function reemplazarParametrosSQL($sql, $parametros)
+{
+    // 1. Reemplazar condiciones = {{param}} (si el valor no está presente, se elimina toda la condición)
+    $sql = preg_replace_callback('/AND\s+([a-zA-Z0-9_\.]+)\s*=\s*{{(.*?)}}/i', function ($match) use ($parametros) {
+        $campo = $match[1];
+        $clave = trim($match[2]);
+
+        if (!array_key_exists($clave, $parametros) || $parametros[$clave] === '' || strtolower($parametros[$clave]) === 'null') {
+            return ''; // elimina la condición completa
+        }
+
+        $valor = DB::getPdo()->quote($parametros[$clave]);
+        return "AND $campo = $valor";
+    }, $sql);
+
+    // 2. Reemplazar BETWEEN {{x}} AND {{y}} (si algún extremo no está, se reemplaza por 1=1)
+    $sql = preg_replace_callback('/BETWEEN\s+{{(.*?)}}\s+AND\s+{{(.*?)}}/i', function ($match) use ($parametros) {
+        $param1 = trim($match[1]);
+        $param2 = trim($match[2]);
+
+        if (empty($parametros[$param1]) || empty($parametros[$param2]) ||
+            strtolower($parametros[$param1]) === 'null' || strtolower($parametros[$param2]) === 'null') {
+            return '1=1'; // no filtra nada
+        }
+
+        $v1 = DB::getPdo()->quote($parametros[$param1]);
+        $v2 = DB::getPdo()->quote($parametros[$param2]);
+        return "BETWEEN $v1 AND $v2";
+    }, $sql);
+
+    // 3. Reemplazar condiciones LIKE '%{{param}}%' (si vacío, usar %)
+    $sql = preg_replace_callback("/LIKE\s+'%?{{(.*?)}}%?'/i", function ($match) use ($parametros) {
+        $clave = trim($match[1]);
+
+        if (!array_key_exists($clave, $parametros) || $parametros[$clave] === '' || strtolower($parametros[$clave]) === 'null') {
+            return "LIKE '%'";
+        }
+
+        $valor = DB::getPdo()->quote('%' . $parametros[$clave] . '%');
+        return "LIKE $valor";
+    }, $sql);
+
+    // 4. Reemplazar cualquier {{param}} restante (por ejemplo en SELECT o IN)
+    $sql = preg_replace_callback('/{{(.*?)}}/', function ($match) use ($parametros) {
+        $clave = trim($match[1]);
+
+        if (!array_key_exists($clave, $parametros) || $parametros[$clave] === '' || strtolower($parametros[$clave]) === 'null') {
+            return 'NULL';
+        }
+
+        return DB::getPdo()->quote($parametros[$clave]);
+    }, $sql);
+
+    return $sql;
+}
+
+
+
+
 
 
 
@@ -617,25 +754,64 @@ class InformesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function ajaxSelect2(Request $request)
     {
-        if (!Auth::user()->can('Eliminar informes')) {
-            return back()->with('error', 'No tienes permiso para eliminar registros.');
+        $search = $request->input('search', '');
+        $archivo = $request->input('archivo'); // nombre del archivo sin ".json"
+        $idCampo = $request->input('id');      // id del filtro select2 a procesar
+
+        if (!$archivo || !$idCampo) {
+            return response()->json(['error' => 'Faltan parámetros.'], 422);
         }
 
-        $informe = Informe::where('identificador', $id)->first();
-
-        if (!$informe) {
-            return back()->with('error', 'No se pudo encontrar el informe: ' . $id);
+        // Asegura que el nombre del archivo termine en .json
+        if (!str_ends_with($archivo, '.json')) {
+            $archivo .= '.json';
         }
 
-        $informe->delete();
+        // Intenta leer el archivo desde storage/app/informe
+        try {
+            $rutaArchivo = 'informes/' . $archivo;
+            if (!Storage::exists($rutaArchivo)) {
+                return response()->json(['error' => 'Archivo no encontrado.'], 404);
+            }
 
-        // Verifica si el archivo existe antes de intentar borrarlo
-        if (Storage::exists('informes/' . $id . '.json')) {
-            Storage::delete('informes/' . $id . '.json');
+            $contenido = Storage::get($rutaArchivo);
+            $json = json_decode($contenido, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return response()->json(['error' => 'JSON inválido.'], 500);
+            }
+
+            // Busca el filtro select2 por ID
+            $filtro = collect($json['filtros']['personalizado'] ?? [])
+                        ->firstWhere('id', $idCampo);
+
+            if (!$filtro || $filtro['tipo'] !== 'select2' || empty($filtro['query'])) {
+                return response()->json(['error' => 'Filtro no válido o sin query.'], 404);
+            }
+
+            // Ejecutar la query con parámetro de búsqueda
+            $consulta = DB::select($filtro['query'], ['search' => '%' . $search . '%']);
+
+            // Formatear resultados para select2
+            $retornar = $filtro['retornar'] ?? ['nombre'];
+            $data = [];
+
+            foreach ($consulta as $fila) {
+                $fila = (array) $fila;
+                $texto = implode(' ', array_map(fn($col) => $fila[$col] ?? '', $retornar));
+                $data[] = [
+                    'id' => $fila['id'] ?? null,
+                    'text' => trim($texto)
+                ];
+            }
+
+            return response()->json($data);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Excepción: ' . $e->getMessage()], 500);
         }
-
-        return back()->with('success', 'El informe ha sido eliminado con éxito.');
     }
+
 }

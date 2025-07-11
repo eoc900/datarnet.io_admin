@@ -7,6 +7,11 @@
     <div class="card-header pt-3">
         <h3>Crear un nuevo informe</h3>
     </div>
+    <div class="mb-3 d-flex justify-content-end mt-4 me-4">
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalParametrosUrl">
+    ⚙️ Parámetros URL
+    </button>
+    </div>
     <form method="post" action="{{ route('informes.store') }}" enctype="multipart/form-data" id="creadorInforme">
 	@csrf
     <input type="hidden" name="crear" value="informe">
@@ -44,6 +49,8 @@
     </div>
     {{-- Contenedor de autoguardado --}}
     <hr>
+
+    @include('sistema_cobros.form_creator.modales.modal_parametros_url')
 
     <div class="card-body bg-light">
          <!-- Aquí tu contenido con Bootstrap y gráficas ApexCharts -->      
